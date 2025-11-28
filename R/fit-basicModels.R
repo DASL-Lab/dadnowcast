@@ -23,7 +23,7 @@ fit_basicModels <- function(formula, model, data) {
   if (as.character(lhs) %in% colnames(data)) {
     lhs_data <- data[, which(colnames(data) == lhs)]
   } else {
-    paste("Variable", lhs, "not found")
+    return(paste("Variable", lhs, "not found"))
   }
 
   # determine the number of variables in the righthand side of the formula
@@ -32,14 +32,17 @@ fit_basicModels <- function(formula, model, data) {
   
   # detect if all variables used in the righthand side are in the given data
   rhs_data <- data.frame(matrix(nrow = length(lhs_data), ncol = numRhsVars))
+  #print(c(length(lhs_data), numRhsVars))
   
   for (i in seq(1:numRhsVars)) {
     if (as.character(rhsVars[i]) %in% colnames(data)) {
       rhs_data[,i] <- data[, which(colnames(data) == rhsVars[i])]
     } else {
-      paste("Variable", lhs, "not found")
+      return(paste("Variable", rhsVars[i], "not found"))
     }
   }
   
+  colnames(rhs_data) <- rhsVars
   
+  rhs_data
 }
