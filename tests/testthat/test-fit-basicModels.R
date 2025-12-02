@@ -25,3 +25,10 @@ test_that("AR models work 2", {
   df <- data.frame(x,y)
   expect_equal(fit_basicModels(y, model = "AR", df)$coef[[2]], 1703.930612, tolerance = 0.001)
 })
+
+test_that("Incorrect model specification works", {
+  x <- c(1:100)
+  y <- EuStockMarkets[,2][1:100]
+  df <- data.frame(x,y)
+  expect_equal(fit_basicModels(y~x, model = "None", df), "Model not recognized")
+})

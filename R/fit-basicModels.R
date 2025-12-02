@@ -16,9 +16,11 @@
 #' fit-basicModels(y ~ x, model = "linear", df)
 
 fit_basicModels <- function(formula, model, data, n = 1) {
-  if (model == "AR") {
+  if (!(model %in% c("AR","linear"))) {
+    return("Model not recognized")
+  } else if (model == "AR") {
     return(arima(formula, order = c(n, 0, 0)))
-  }
+  } else {
   # obtain variables for the left and righthand side of the given formula
   lhs <- formula[[2]]
   rhs <- formula[[3]]
@@ -50,12 +52,7 @@ fit_basicModels <- function(formula, model, data, n = 1) {
 
   colnames(usedData) <- c(lhs, rhsVars)
 
-  usedData
+  lm(formula, data = usedData)
 
-  # create and return the specified models
-  if (model == "linear") {
-    lm(formula, data = usedData)
-  } else {
-    return("Model not recognized")
   }
 }
