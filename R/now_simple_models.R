@@ -40,13 +40,14 @@ now_simple_models <- function(
   x <- data[, all.vars(formula[[3]])]
 
   naCount <- find_nas(y)
-  shortData <- data[1:(length(y) - naCount), ]
+  numNonNa <- (length(y) - naCount)
+  shortData <- data[1:numNonNa, ]
 
   modToUse <- fit_simple_model(formula, shortData, model, order)
 
   # create predict part here that predicts naCount ahead
 
-  newX <- x[(length(shortData[, 1]) + 1):length(x)]
+  newX <- x[(numNonNa + 1):length(x)]
 
   switch(model,
     "lm" = now_simple_lm(newX, modToUse),
