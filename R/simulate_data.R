@@ -4,7 +4,8 @@
 #'
 simulate_data <- function(
   cnisp_samp_prop = 0.2, ptsos_samp_prop = 0.3,
-  virulence = 0.05
+  virulence = 0.05,
+  to_nowcast = 10
 ) {
 
   dates <- seq(
@@ -63,7 +64,7 @@ simulate_data <- function(
       ptsos = ifelse(ptsos < 0, 0, round(ptsos, 0)),
       npos = round(npos, 0)
     )
-
+  dada$dad[(length(dada$dad) - to_nowcast + 1):length(dada$dad)] <- NA
   dada
 }
 
