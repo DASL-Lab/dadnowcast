@@ -1,0 +1,33 @@
+---
+title: "Example Usage"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{example-usage}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(fatherStay)
+```
+
+This vignette subject to change, and will likely be out of date very shortly.
+
+```{r}
+df <- simulate_data()
+tail(df, 12) # last 10 are NA - to be nowcast!
+```
+
+```{r}
+now_simple_models(dad ~ npos, df, model = "ar", order = 1)
+```
+
+
+
