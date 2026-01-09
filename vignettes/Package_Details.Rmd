@@ -53,27 +53,36 @@ Starting with defining the specific problem that we are wanting to solve. When r
 
 We will be making several key assumptions in this project. The first is that the data for the explanatory variables can be at least somewhat successfully imputed by reasonable estimates. We will also assume that we have access to all the updated values of the explanatory variables at the time $t$ when we are making a prediction for $Y_t$. <- Devan, is this a good/valid assumption to make?
 
-There are several different techniques for nowcasting in a time series context:
+There are several different techniques for nowcasting in a time series context, in general they are organized from simplest to more complex:
 
-### Kalman filter/Smoothing
+### Simple Linear Models
 
-A common method in nowcasting time series data is using the Kalman Filter (rossiKalmanFilteringBased2015). The Kalman filter predicts one step ahead and its algorithm works in two steps, first creating a prediction, and then after the actual data is observed, updating that prediction using the Kalman gain. This preserves the overall trend of the data, while also taking the actual values into account. The applications of this to nowcasting are that we would use the prediction step to nowcast the desired value (DAD) and then the prediction step would update the algorithm when more data is observed.
-
-A Kalman filter is capable of handling the multivariate nature of this data. The foundational equations that the Kalman filter is based on:
+The first and simplest models that we will be looking at in this project are linear models where the value of DAD we are nowcasting is dependent on the current values of the explanatory variables:
 $$
-y_t = ax_t + \epsilon_1 \\
-x_t = bx_{t-1} + \epsilon_2
+y_t = ax_t + bz_{t,i} + \epsilon_t
 $$
 
-Can easily be changed to accommodate multiple predictors:
+We can build on this basic model by adding the complexity of lagging the values of the explanatory variables:
+$$
+y_t = cx_t + dx_{t-1} + \epsilon_t
+$$
+Building on this complexity is if we take into account previous iterations of $y$, which is effectively a simple AR model of $y$ based on $x$:
+$$
+y_t = ey_{t-1} + fx_{t} + \epsilon_t
+$$
+
+### Non Linear Models
+In additional all of these relatively simple linear models we will also be considering non-linear models/processes. In this project we are seeking to predict the current values of DAD, not create an explanatory model. This makes many ML models a good option to use since they are focused on creating predictions not on their explanatory power. We will start with using random forests, since they are relatively easy to implement and are a powerful tool, the predictive capabilities can be further enhanced by using techniques like XGboost. 
+
+The models discussed here are the ones we will definitely be using and a good starting point, but throughout the project more will likely come up and we will be using those as well. We are not limiting ourselves to just the models discussed here.
+
+### ARX
+
+A natural next step is to model the process as an ARX process, that is as an AR system that is also dependent on current and past values of some explanatory variable. We can represent it by the following equations:
 
 $$
-y_t = ax_t + bz_t + \epsilon_1 \\
-x_t = cx_{t-1} + \epsilon_2 \\
-z_t = dz_{t-1} + \epsilon_3
+y_t = a_{t} x_{t} + \sum_{i=1}^n a_{t-i} x_{t-i} + \sum_{j=1}^m b_{t-i} y_{t-i} + \epsilon_t
 $$
-
-There are R packages that can be used to run a Kalman Filter such as kalmanfilter, however it may be easier for us to code our own functions for it so that they integrate well with the rest of the package.
 
 ### Dynamic Factor Models
 
@@ -90,11 +99,22 @@ $$
 The main benefit of a dynamic factor model is that it allows for a dataset with many variables to be analysed more efficiently, but using only the factors and not all of the variables in the dataset. In this case we do not have a large number of factors, and so dynamic factor models may not be the best approach, but is still worth considering and comparing with other methods.
 (https://www.princeton.edu/~mwatson/papers/dfm_oup_4.pdf)
 
-### VAR & BVAR
+### Kalman filter/Smoothing
 
-Vector Autoregression is used primarily for economic data. Uses the form:
+A common method in nowcasting time series data is using the Kalman Filter (rossiKalmanFilteringBased2015). The Kalman filter predicts one step ahead and its algorithm works in two steps, first creating a prediction, and then after the actual data is observed, updating that prediction using the Kalman gain. This preserves the overall trend of the data, while also taking the actual values into account. The applications of this to nowcasting are that we would use the prediction step to nowcast the desired value (DAD) and then the prediction step would update the algorithm when more data is observed.
+
+A Kalman filter is capable of handling the multivariate nature of this data. The foundational equations that the Kalman filter is based on:
 $$
-y_t = A_0 + x_{t-1}A_1 + \cdots + x_{t-p}A_p + \epsilon_t
+y_t = a_tx_t + \epsilon_{1,t} \\
+x_t = b_tx_{t-1} + \epsilon_{2,t}
 $$
 
-Bayesian Vector Autoregression models have the same structure, the difference comes in the method to estimate the variables. These methods can be computationally intensive so we will need to investigate if they are appropriate for the computation constraints of this project. (https://www.econstor.eu/bitstream/10419/319609/1/1927850754.pdf)
+Can easily be changed to accommodate multiple predictors:
+
+$$
+y_t = a_tx_t + b_tz_t + \epsilon_{1,t} \\
+x_t = c_tx_{t-1} + \epsilon_{2,t} \\
+z_t = d_tz_{t-1} + \epsilon_{3,t}
+$$
+
+There are R packages that can be used to run a Kalman Filter such as kalmanfilter these are a good option for us to use since manually coding a Kalman filter would be very complex.
