@@ -71,6 +71,39 @@ $$
 y_t = ey_{t-1} + fx_{t} + \epsilon_t
 $$
 
+### Mechanistic Models
+
+In the simple linear models, the user can input whatever predictors they want (including lag terms and non-linear transformations). However, the nature of the data suggests a possible mechanistic model. The following model structure was suggested by David Champredon.
+
+The following assumptions lay the foundation of the mechanistic model:
+
+1. The total admissions are a constant fraction of the total positive tests.
+    - $D \approx \eta R$, e.g. 20% of cases are hospitalized.
+    - $\eta$ is the "virulence"
+2. The total admissions are a constant fraction of *each of* the provincial and national hospital data.
+    - $\hat s_c D \approx C$ and $ \hat s_p D \approx PTSOS$
+    - $\hat s_c$ and $\hat s_p$ are the sampling rates, which are assumed to be known from historical data.
+
+This gives us three equations with parameters/error terms to be estimated simultaneously:
+\begin{align*}
+E(D_t) &= \eta R_t\\
+E(C_t) &= \eta \hat s_c R_t\\
+E(P_t) &= \eta \hat s_p R_t
+\end{align*}
+
+The interpretation of this model is that the test positivity is linearly related to hopsitalizations, with a coefficient that is consistent across DAD, PTSOS, and CNISP. There is an adjustment to the coefficients for CNISP and PTSOS as they are assumed to be samples from DAD. The benefit of this framework is a more robust estimate of $\eta$, but this requires fairly strict assumptions on the data generating process.
+
+Assuming independence between $D_t$, $C_t$, and $P_t$ (conditional on $R_t$ and the parameters), this model can be estimated via Bayesian methods or with MLE. The likelhood factors into three parts:
+\begin{align*}
+f(D_t, C_t, P_t | \eta, R_t) &= f_d(D_t|\eta, R_t, ...) f_c(C_t|\eta, R_t, ...) f_p(P_t|\eta, R_t, ...)
+\end{align*}
+and we can assume an appropriate likelihood for each response. The "$...$" in each factor allows for likelihoods with further parameters. If we assume a normal distribution (i.e., simple linear regression for each), then the "$...$" takes the place of the variance terms (which could also allow for correlation). A Poisson GLM would not require further parameters, but a Negative Binomial GLM would extend the Poisson GLM to include a dispersion parameter. There is no restriction that each model have the same distribution, but doing so may allow for a closed-form solution for $\eta$ by minimizing the log likelihood.
+
+- It may be beneficial to allow for correlated errors across the three models. It seems likely that if, say, CNISP is being underpredicted by $R_t$ then so is PTSOS. This is possible in a simple linear regression framework, but difficult in GLMs in general. For Poisson and Negative Binomial, further research (as part of a separate project) into copula modelling or shared random effects may be appropriate.
+- This model assumes that $\hat s_p$ and $\hat s_p$ are known from historical data, but since we have multiple response variables it would be feasible to estimate these from the data. The package can be modified to allow for this in the future.
+
+
+
 ### Non Linear Models
 In additional all of these relatively simple linear models we will also be considering non-linear models/processes. In this project we are seeking to predict the current values of DAD, not create an explanatory model. This makes many ML models a good option to use since they are focused on creating predictions not on their explanatory power. We will start with using random forests, since they are relatively easy to implement and are a powerful tool, the predictive capabilities can be further enhanced by using techniques like XGboost. 
 
