@@ -53,6 +53,16 @@ Starting with defining the specific problem that we are wanting to solve. When r
 
 We will be making several key assumptions in this project. The first is that the data for the explanatory variables can be at least somewhat successfully imputed by reasonable estimates. We will also assume that we have access to all the updated values of the explanatory variables at the time $t$ when we are making a prediction for $Y_t$. <- Devan, is this a good/valid assumption to make?
 
+## Uncertainty Quantification
+
+Regardless of the model used, the goal of this package is to predict the trailing NA values in the response variable and to provide estimates of the uncertainty of these predictions. Some of the proposed models include uncertainty estimates as part of their machinery (for example, linear models have closed-form prediction intervals), but others require numerical techniques.
+
+A model-agnostic estimate of prediction uncertainty Ensemble-based Batch Prediction Intervals (EnBPI). Suppose we're doing 5-step ahead prediction with a batch size of 50. We start by randomly sampling a "batch" from our complete data (not including the data to be nowcasted), that is, we take a string of 50 observations as well as the 5 next data points. We fit the model to the 50 observations and we make predictions for the next 5 data points. We record how far away our prediction is from the observed data. We do this many times to build up a data set of 5-step ahead prediction errors. We can look at, say, the 2.5\% and 97.5\% quantiles of these errors to get the width of our prediction interval. When we actually perform the nowcasts on the missing data, we center these intervals on our predictions.
+
+Since this approach works for any model (regardless of whether there's a theoretical or closed-form solution for prediction intervals), we will apply this to all models for consistency. The only exception will be for Bayesian models, for which we'll use the posterior of the predicted values.
+
+## Potential Models
+
 There are several different techniques for nowcasting in a time series context, in general they are organized from simplest to more complex:
 
 ### Simple Linear Models
