@@ -22,22 +22,24 @@ library(fatherStay)
 
 Our data are expected to look something like the following:
 
-| date | y   | x1  | z1  | z2  |
-|------|-----|-----|-----|-----|
-| 1    | 1.1 | 0.5 | 2.3 | 1.2 |
-| 2    | 1.5 | 0.2 | 2.7 | 1.2 |
-| 3    | NA  | 0.1 | 2.8 | 1.5 |
-| 4    | 1.5 | NA  | 2.7 | 1.3 |
-| 5    | 1.8 | 0.2 | 2.9 | 1.2 |
-| ...  | ... | ... | ... | ... |
-| 204  | 2.5 | 1.2 | 1.7 | 2.2 |
-| 205  | 2.9 | 0.8 | 0.7 | 2.5 |
-| 206  | NA  | 0.2 | 2.7 | 2.9 |
-| 207  | NA  | 0.6 | 2.2 | 1.9 |
-| 209  | NA  | 0.4 | 2.0 | 3.9 |
-| 210  | NA  | 0.2 | 1.0 | 3.8 |
+| date       | y   | x1  | z1  | z2  |
+|------------|-----|-----|-----|-----|
+| 2020-01-01 | 1.1 | 0.5 | 2.3 | 1.2 |
+| 2020-01-02 | 1.5 | 0.2 | 2.7 | 1.2 |
+| 2020-01-03 | NA  | 0.1 | 2.8 | 1.5 |
+| 2020-01-04 | 1.5 | NA  | 2.7 | 1.3 |
+| 2020-01-05 | 1.8 | 0.2 | 2.9 | 1.2 |
+| ...        | ... | ... | ... | ... |
+| 2020-12-26 | 2.5 | 1.2 | 1.7 | 2.2 |
+| 2020-12-27 | 2.9 | 0.8 | 0.7 | 2.5 |
+| 2020-12-28 | NA  | 0.2 | 2.7 | 2.9 |
+| 2020-12-29 | NA  | 0.6 | 2.2 | 1.9 |
+| 2020-12-30 | NA  | 0.4 | 2.0 | 3.9 |
+| 2020-12-31 | NA  | 0.2 | 1.0 | 3.8 |
 
-Note the string of NA values in y in the last days of the study, which are the values to be nowcasted. Note also the presence of NA values in the response and the predictors.
+The date should be converted into a datetime object in R prior to use in this package, e.g. with `lubridate::ymd()`.
+
+Note the string of NA values in y in the last days of the study, which are the values to be nowcasted. Note also the presence of NA values in the response and the predictors prior to nowcasting, which must be imputed for the methods we propose.
 
 ## Imputation
 
@@ -51,7 +53,7 @@ The package that we will be using in this project is imputeTS, a package in R fo
 
 Starting with defining the specific problem that we are wanting to solve. When referring to nowcasting we denote the measurement of DAD at time $t$ by the value $Y_t$ and the measurements of the explanatory variables at time $t$ to be the values $X_{1,t}$ for RVDSS and $Z_{j,t}$ where $j \in \{1,2\}$ representing CNISP, and PTSOS. Then the problem that we are working is how to predict the value of $Y_t$ given the values $X_{1,t}$, $Z_{j,t}$, and $Y_{t-1}$.
 
-We will be making several key assumptions in this project. The first is that the data for the explanatory variables can be at least somewhat successfully imputed by reasonable estimates. We will also assume that we have access to all the updated values of the explanatory variables at the time $t$ when we are making a prediction for $Y_t$. <- Devan, is this a good/valid assumption to make?
+We will be making several key assumptions in this project. The first is that the data for the explanatory variables can be at least somewhat successfully imputed by reasonable estimates. We will also assume that we have access to all the updated values of the explanatory variables at the time $t$ when we are making a prediction for $Y_t$ (or they can be reasonably well imputed).
 
 ## Uncertainty Quantification
 
@@ -60,6 +62,27 @@ Regardless of the model used, the goal of this package is to predict the trailin
 A model-agnostic estimate of prediction uncertainty Ensemble-based Batch Prediction Intervals (EnBPI). Suppose we're doing 5-step ahead prediction with a batch size of 50. We start by randomly sampling a "batch" from our complete data (not including the data to be nowcasted), that is, we take a string of 50 observations as well as the 5 next data points. We fit the model to the 50 observations and we make predictions for the next 5 data points. We record how far away our prediction is from the observed data. We do this many times to build up a data set of 5-step ahead prediction errors. We can look at, say, the 2.5\% and 97.5\% quantiles of these errors to get the width of our prediction interval. When we actually perform the nowcasts on the missing data, we center these intervals on our predictions.
 
 Since this approach works for any model (regardless of whether there's a theoretical or closed-form solution for prediction intervals), we will apply this to all models for consistency. The only exception will be for Bayesian models, for which we'll use the posterior of the predicted values.
+
+## Predictions
+
+There is a distinction between models that predict DAD based on the current values of CNISP, PTSOS, and RVDSS and models that use past values (a.k.a. lags) of any of the measured variables. Predictions from current values are equally valid regardless of how far ahead we are nowcasting, whereas lag-based models will tend to have better predictions for early predictions which get worse at later predictions (but often still better than models based only on current values).
+
+For models that use lagged values of DAD, special considerations must be made. In order to predict two steps ahead, the one-step ahead prediction is required. If the one-step-ahead prediction is poor, then the two-step-ahead prediction will also be poor. In this way, the k-step-ahead prediction gets more variable as k increases.
+
+This is not the case for models that do not rely on lagged values of DAD; predictions for k-steps-ahead can simply be made based on the covariates (there is no distinction for lagged versus current values of the covariates so long as the information is available). However, since models with lagged values of the response incorporate more information, they can generally be expected to make better predictions.
+
+### Prediction of Unobserved Locations
+
+The models will only be fit to data from a given location, but it may be reasonable to use the estimated model from one location to predict another location, for example in a location for which DAD is never observed.
+
+For non-lag-based models, this is straightforward. However, for models that use the lags of the response, any errors in the predictions for the first few values of DAD will propagate throughout all later predictions.
+
+The model will be designed to allow the user to input the formula, then the resultant object can be used for predictions on arbitrary data. This allows fitted models to be used to predict any other location. If the user wants to make predictions for locations with no DAD recorded, we make the following suggestions:
+
+1. Make predictions for locations where DAD *is* known, and observe the prediction errors. 
+2. There is no restriction in the package that DAD must be the response. Perhaps try fitting a model with, say, PTSOS as the response and predict the PTSOS at the other locations, observing the prediction errors. This gives a glimpse into how well one location's data can predict another, especially given that PTSOS and CNISP are measuring something very similar to the response.
+
+The prediction errors from other locations should be interpreted carefully since there is absolutely no guarantee that the relationships in one location transfer to another.
 
 ## Potential Models
 
