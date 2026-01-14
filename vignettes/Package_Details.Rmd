@@ -43,7 +43,7 @@ Note the string of NA values in y in the last days of the study, which are the v
 
 ## Imputation
 
-We expect there to be some missing data in the predictor variables. Imputation is the best way to deal with them. The goal is that we will have relatively simple methods to impute the values of the explanatory variables $x_1$, $z_1$, and $z_2$, and the package will allow the user to specify the type of imputation to be used. Additionally our data has the advantage of having multiple potentially correlated variables. We would ideally like to use this fact to our advantage when imputing the data to create better imputations. Imputation is not the main focus of this project and so we will aim to keep the imputation methods used relatively simple. 
+We expect there to be some missing data in the predictor variables. We plan on using imputation to deal with them since many time series methods require there to be no gaps in the data. The goal is that we will have relatively simple methods to impute the values of the explanatory variables $x_1$, $z_1$, $z_2$, and if necessary $y_t$, and the package will allow the user to specify the type of imputation to be used. The data has multiple potentially correlated variables, this could be used to improve the imputations, this will come in useful when we need to impute large sections of the explanatory variables such as when a region is missing a certain measurement, however for imputing $y_t$ we will use simpler methods since imputation is not the main focus of this project.
 
 There are several existing R packages that allow for imputation and work in a time series context, and while we do not want the program we are developing to be dependent on many packages it makes sense to use an existing package for the imputation since it is not a focus of the project. 
 
@@ -149,6 +149,8 @@ Where $b_i(), \ b_j(), \ b_k()$ are all basis splines. There is room to expand t
 Random forests are also a good technique for us to use on this project, since they are relatively easy to implement and are a powerful tool, the predictive capabilities can be further enhanced by using techniques like XGboost. 
 
 Random Forests work best when there are many variables for them to select between. In this project, we only have our three main covariates to work with, however the time bound nature of our data allows us to use the lagged values of the covariates as well to enhance the number of variables we are working with.
+
+Other potential models that we may want to use are simple neural nets, 
 
 The models discussed here are the ones we will definitely be using and a good starting point, but throughout the project more will likely come up and we will be using those as well. We are not limiting ourselves to just the models discussed here.
 
