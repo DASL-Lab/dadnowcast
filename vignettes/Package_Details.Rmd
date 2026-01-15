@@ -148,7 +148,7 @@ Where $b_i(), \ b_j(), \ b_k()$ are all basis splines. There is room to expand t
 
 Random forests are also a good technique for us to use on this project, since they are relatively easy to implement and are a powerful tool, the predictive capabilities can be further enhanced by using techniques like XGboost. Random Forests work best when there are many variables for them to select, and find non-linear patterns between. In this project, we only have our three main covariates to work with, however the time bound nature of our data allows us to use the lagged values of the covariates, to enhance the number of variables we are working with. The Random Forest model would then be able to predict future values of DAD based on some combination of the current and lagged values of the explanatory variables.
 
-There are Other potential models that we may want to use in this project such as simple neural nets. The models discussed here are the ones we will definitely be using and a good starting point, but throughout the project other useful models will likely come up and we will be using those as well. We are not intending on limiting ourselves to just the models discussed here.
+There are other potential models that we may want to use in this project such as simple neural nets. The models discussed here are the ones we will definitely be using and a good starting point, but throughout the project other useful models will likely come up and we will be using those as well. We are not intending on limiting ourselves to just the models discussed here.
 
 ### ARX
 
@@ -157,6 +157,9 @@ A natural next step is to model the process as an ARX process, that is as an AR 
 $$
 y_t = a_{t} x_{t} + \sum_{i=1}^n a_{t-i} x_{t-i} + \sum_{j=1}^m b_{t-i} y_{t-i} + \epsilon_t
 $$
+
+Where $a_i$ represents the impacts of the external variables and $b_i$'s are the parameters for the AR model and have the same interpretation of being measures of the impact of previous terms in the sequence. In this case there is also a $a_tx_t$ term included since this is a model for nowcasting and so the current value of the explanatory variable is used.
+
 This system can also be expanded to incorporate multiple explanatory variables:
 
 $$
