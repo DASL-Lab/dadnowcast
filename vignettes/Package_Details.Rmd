@@ -39,7 +39,7 @@ This package expects the data to look something like the following:
 
 The `date` should be converted into a datetime object in R prior to use in this package, e.g. with `lubridate::ymd()`. Note that the column names can be arbitrary.
 
-Note the string of trailing NA values in y in the last days of the study, which the package interprets as the values to be nowcasted. Note also the presence of NA values in the response and the predictors prior to nowcasting, which must be imputed for many of the methods we propose.
+Note the string of trailing NA values in y in the last days of the study, which the package interprets as the values to be nowcasted. Note also the presence of NA values in the response and the predictors prior to nowcasting, which must be imputed for many of the methods we propose. Helper functions can be created to do some of the data processing steps as needed.
 
 ## Imputation
 
@@ -51,25 +51,25 @@ The package that we will be using in this project is imputeTS, a package in R fo
 
 ## Nowcasting
 
-Starting with defining the specific problem that we are wanting to solve. When referring to nowcasting we denote the measurement of DAD at time $t$ by the value $Y_t$ and the measurements of the explanatory variables at time $t$ to be the values $X_{1,t}$ for RVDSS and $Z_{j,t}$ where $j \in \{1,2\}$ representing CNISP, and PTSOS. Then the problem that we are working is how to predict the value of $Y_t$ given the values $X_{1,t}$, $Z_{j,t}$, and $Y_{t-1}$.
+Starting with defining the specific problem that we are wanting to solve. When referring to nowcasting we denote the measurement of DAD at time $t$ by the value $Y_t$ and the measurements of the explanatory variables at time $t$ to be the values $X_{1,t}$ for RVDSS and $Z_{j,t}$ where $j \in \{1,2\}$ representing CNISP, and PTSOS. Then the problem that we are working is how to predict the value of $Y_t$ given the values $X_{1,t}$, $Z_{j,t}$, and previous (lag) values for each variable (including $Y_{t-l}$).
 
-We will be making several key assumptions in this project. The first is that the data for the explanatory variables can be at least somewhat successfully imputed by reasonable estimates. We will also assume that we have access to all the updated values of the explanatory variables at the time $t$ when we are making a prediction for $Y_t$ (or they can be reasonably well imputed).
+We will be making several key assumptions in this project. The first is that any missing data for the explanatory variables can be at least somewhat successfully imputed by reasonable estimates. We will also assume that we have access to all the updated values of the explanatory variables at the time $t$ when we are making a prediction for $Y_t$ (or they can be reasonably well imputed).
 
 ## Uncertainty Quantification
 
 Regardless of the model used, the goal of this package is to predict the trailing NA values in the response variable and to provide estimates of the uncertainty of these predictions. Some of the proposed models include uncertainty estimates as part of their machinery (for example, linear models have closed-form prediction intervals), but others require numerical techniques.
 
-A model-agnostic estimate of prediction uncertainty Ensemble-based Batch Prediction Intervals (EnBPI). Suppose we're doing 5-step ahead prediction with a batch size of 50. We start by randomly sampling a "batch" from our complete data (not including the data to be nowcasted), that is, we take a string of 50 observations as well as the 5 next data points. We fit the model to the 50 observations and we make predictions for the next 5 data points. We record how far away our prediction is from the observed data. We do this many times to build up a data set of 5-step ahead prediction errors. We can look at, say, the 2.5\% and 97.5\% quantiles of these errors to get the width of our prediction interval. When we actually perform the nowcasts on the missing data, we center these intervals on our predictions.
+A model-agnostic estimate of prediction uncertainty is Ensemble-based Batch Prediction Intervals (EnBPI). Suppose we're doing 5-step ahead prediction with a batch size of 50. We start by randomly sampling a "batch" from our complete data (not including the data to be nowcasted), that is, we take a string of 50 observations as well as the 5 next data points. We fit the model to the 50 observations and we make predictions for the next 5 data points. We record how far away our prediction is from the observed data. We do this many times to build up a data set of 5-step ahead prediction errors. We can look at, say, the 2.5\% and 97.5\% quantiles of these errors to get the width of our prediction interval. When we actually perform the nowcasts on the missing data, we center these intervals on our predictions.
 
-Since this approach works for any model (regardless of whether there's a theoretical or closed-form solution for prediction intervals), we will apply this to all models for consistency. The only exception will be for Bayesian models, for which we'll use the posterior of the predicted values.
+Since this approach works for any model (regardless of whether there's a theoretical or closed-form solution for prediction intervals), we will apply this to all models for consistency. The only exception will be for any Bayesian models we might implement, for which we'll use the posterior of the predicted values for all numerical summaries.
 
-## Predictions
-
-There is a distinction between models that predict DAD based on the current values of CNISP, PTSOS, and RVDSS and models that use past values (a.k.a. lags) of any of the measured variables. Predictions from current values are equally valid regardless of how far ahead we are nowcasting, whereas lag-based models will tend to have better predictions for early predictions which get worse at later predictions (but often still better than models based only on current values).
+## A Note on Predictions
 
 For models that use lagged values of DAD, special considerations must be made. In order to predict two steps ahead, the one-step ahead prediction is required. If the one-step-ahead prediction is poor, then the two-step-ahead prediction will also be poor. In this way, the k-step-ahead prediction gets more variable as k increases.
 
 This is not the case for models that do not rely on lagged values of DAD; predictions for k-steps-ahead can simply be made based on the covariates (there is no distinction for lagged versus current values of the covariates so long as the information is available). However, since models with lagged values of the response incorporate more information, they can generally be expected to make better predictions.
+
+In this package, any method that is implemented must have a way to handle $k$-step ahead predictions.
 
 ### Prediction of Unobserved Locations
 
@@ -148,7 +148,9 @@ Where $b_i(), \ b_j(), \ b_k()$ are all basis splines. There is room to expand t
 
 Random forests are also a good technique for us to use on this project, since they are relatively easy to implement and are a powerful tool, the predictive capabilities can be further enhanced by using techniques like XGboost. Random Forests work best when there are many variables for them to select, and find non-linear patterns between. In this project, we only have our three main covariates to work with, however the time bound nature of our data allows us to use the lagged values of the covariates, to enhance the number of variables we are working with. The Random Forest model would then be able to predict future values of DAD based on some combination of the current and lagged values of the explanatory variables.
 
-There are other potential models that we may want to use in this project such as simple neural nets. The models discussed here are the ones we will definitely be using and a good starting point, but throughout the project other useful models will likely come up and we will be using those as well. We are not intending on limiting ourselves to just the models discussed here.
+There are other potential models that we may want to use in this project such as simple neural nets. The models discussed here are the ones we will definitely be using and a good starting point, but throughout the project other useful models will likely come up and we will be using those as well. We are not intending on limiting ourselves to just the models discussed here. 
+
+The package will also provide an API to allow additional models. The user can specify a function (or functions) that can take in data of a particular format and output predictions in a package-specific format.
 
 ### ARX
 
