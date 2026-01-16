@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r setup, echo=FALSE}
 library(fatherStay)
 ```
 
@@ -41,14 +41,6 @@ This package expects the data to look something like the following:
 The `date` should be converted into a datetime object in R prior to use in this package, e.g. with `lubridate::ymd()`. Note that the column names can be arbitrary.
 
 Note the string of trailing NA values in y in the last days of the study, which the package interprets as the values to be nowcasted. Note also the presence of NA values in the response and the predictors prior to nowcasting, which must be imputed for many of the methods we propose. Helper functions can be created to do some of the data processing steps as needed.
-
-## Imputation
-
-We expect there to be some missing data in the predictor variables. We plan on using imputation to deal with them since many time series methods require there to be no gaps in the data. The goal is that we will have relatively simple methods to impute the values of the explanatory variables $x_1$, $z_1$, $z_2$, and if necessary $y_t$, and the package will allow the user to specify the type of imputation to be used. The data has multiple potentially correlated variables, this could be used to improve the imputations, this will come in useful when we need to impute large sections of the explanatory variables such as when a region is missing a certain measurement, however for imputing $y_t$ we will use simpler methods since imputation is not the main focus of this project.
-
-There are several existing R packages that allow for imputation and work in a time series context, and while we do not want the program we are developing to be dependent on many packages it makes sense to use an existing package for the imputation since it is not a focus of the project. 
-
-The package that we will be using in this project is imputeTS, a package in R for imputing univariate time series. It has the advantage of being specifically for time series data. It features a variety of complex methods for imputation such as; Kalman smoothing, and interpolation, as well as simple methods like using the last observation or the mean [@moritzImputeTSTimeSeries2017]. While this package does not take advantage of the multivariate nature of our data it is still a good option to impute the missing values in our data.
 
 ## Nowcasting
 
@@ -85,6 +77,14 @@ The model will be designed to allow the user to input the formula, then the resu
 
 The prediction errors from other locations should be interpreted carefully since there is absolutely no guarantee that the relationships in one location transfer to another.
 
+## Imputation
+
+We expect there to be some missing data in the predictor variables. We plan on using imputation to deal with them since many time series methods require there to be no gaps in the data. The goal is that we will have relatively simple methods to impute the values of the explanatory variables $x_1$, $z_1$, $z_2$, and if necessary $y_t$, and the package will allow the user to specify the type of imputation to be used. The data has multiple potentially correlated variables, this could be used to improve the imputations, this will come in useful when we need to impute large sections of the explanatory variables such as when a region is missing a certain measurement, however for imputing $y_t$ we will use simpler methods since imputation is not the main focus of this project.
+
+There are several existing R packages that allow for imputation and work in a time series context, and while we do not want the program we are developing to be dependent on many packages it makes sense to use an existing package for the imputation since it is not a focus of the project. 
+
+The package that we will be using in this project is imputeTS, a package in R for imputing univariate time series. It has the advantage of being specifically for time series data. It features a variety of complex methods for imputation such as; Kalman smoothing, and interpolation, as well as simple methods like using the last observation or the mean [@moritzImputeTSTimeSeries2017]. While this package does not take advantage of the multivariate nature of our data it is still a good option to impute the missing values in our data.
+
 ## Potential Models
 
 There are several different techniques for nowcasting in a time series context, in general they are organized from simplest to more complex:
@@ -98,11 +98,7 @@ $$
 
 We can build on this basic model by adding the complexity of lagging the values of the explanatory variables:
 $$
-y_t = \phi x_t + \rho x_{t-1} + \epsilon_t
-$$
-Building on this complexity is if we take into account previous iterations of $y$, which is effectively a simple AR model of $y$ based on $x$:
-$$
-y_t = \gamma y_{t-1} + \psi x_{t} + \epsilon_t
+y_t = \alpha_0 x_t + \alpha_1 x_{t-1} + \beta z_{t,i} + \epsilon_t
 $$
 
 ### Mechanistic Models
@@ -129,7 +125,7 @@ The interpretation of this model is that the test positivity is linearly related
 
 Assuming independence between $D_t$, $C_t$, and $P_t$ (conditional on $R_t$ and the parameters), this model can be estimated via Bayesian methods or with MLE. The likelhood factors into three parts:
 \begin{align*}
-f(D_t, C_t, P_t | \eta, R_t) &= f_d(D_t|\eta, R_t, ...) f_c(C_t|\eta, R_t, ...) f_p(P_t|\eta, R_t, ...)
+f(D_t, C_t, P_t | \eta, R_t, ...) &= f_d(D_t|\eta, R_t, ...) f_c(C_t|\eta, R_t, ...) f_p(P_t|\eta, R_t, ...)
 \end{align*}
 and we can assume an appropriate likelihood for each response. The "$...$" in each factor allows for likelihoods with further parameters. If we assume a normal distribution (i.e., simple linear regression for each), then the "$...$" takes the place of the variance terms (which could also allow for correlation). A Poisson GLM would not require further parameters, but a Negative Binomial GLM would extend the Poisson GLM to include a dispersion parameter. There is no restriction that each model have the same distribution, but doing so may allow for a closed-form solution for $\eta$ by minimizing the log likelihood.
 
@@ -158,7 +154,7 @@ The package will also provide an API to allow additional models. The user can sp
 A natural next step is to model the process as an ARX process, that is as an AR system that is based on previous values of the variables itself but also dependent on current and past values of some external explanatory variable. We can represent it by the following equations [@picciARXModelingTime2024]:
 
 $$
-y_t = \alpha_{t} x_{t} + \sum_{i=1}^n \alpha_{t-i} x_{t-i} + \sum_{j=1}^m \beta_{t-i} y_{t-i} + \epsilon_t
+y_t = \sum_{j=1}^m \beta_{t-i} y_{t-i} + \sum_{i=0}^n \alpha_{t-i} x_{t-i} + \epsilon_t
 $$
 
 Where $\alpha_i$ represents the impacts of the external variables and $\beta_i$'s are the parameters for the AR model and have the same interpretation of being measures of the impact of previous terms in the sequence. In this case there is also a $a_tx_t$ term included since this is a model for nowcasting and so the current value of the explanatory variable is used.
@@ -166,36 +162,29 @@ Where $\alpha_i$ represents the impacts of the external variables and $\beta_i$'
 This system can also be expanded to incorporate multiple explanatory variables:
 
 $$
-y_t = \alpha_{t} x_{t} + \sum_{i=1}^n \alpha_{t-i} x_{t-i} + \gamma_{t} z_{t,1} + \sum_{i=1}^p \gamma_{t-i} z_{t-i,1} + \sum_{j=1}^m \beta_{t-i} y_{t-i} + \epsilon_t
+y_t = \sum_{i=0}^n \alpha_{t-i} x_{t-i} + \sum_{i=0}^p \gamma_{t-i} z_{t-i,1} + \sum_{j=1}^m \beta_{t-i} y_{t-i} + \epsilon_t
 $$
 
-It would be easier to represent this in a vector form as:
-
-$$
-y_t = \alpha_{t} x_{t} + \boldsymbol{\alpha}\boldsymbol{x} + \gamma_{t} z_{t,1} +  \boldsymbol{\gamma} \boldsymbol{z_1} + \boldsymbol{\beta}
-\boldsymbol{y} + \epsilon_t
-$$
-
-Where $\boldsymbol{x, \ y, \ z}$ are the past values of those variables, and $\boldsymbol{\alpha, \ \beta, \ \gamma}$ are the values of the coefficients. The ARX model is a special case of the ARIMAX model where the integration and moving average parts are both 0, expanding the ARX model to an ARIMAX one is relatively straightforward.
+The ARX model is a special case of the ARIMAX model where the integration and moving average parts are both 0, expanding the ARX model to an ARIMAX one is relatively straightforward.
 
 ### Kalman filter/Smoothing
 
 A common method in nowcasting time series data is using the Kalman Filter [@rossiKalmanFilteringBased2015]. The Kalman filter predicts one step ahead and its algorithm works in two steps, first creating a prediction, and then after the actual data is observed, updating that prediction using the Kalman gain. This preserves the overall trend of the data, while also taking the actual values into account. The applications of this to nowcasting are that we would use the prediction step to nowcast the desired value (DAD) and then the prediction step would update the algorithm when more data is observed.
 
-A Kalman filter is capable of handling the multivariate nature of this data. The foundational equations that the Kalman filter is based on:
-$$
+The foundational equations that the Kalman filter is based on:
+\begin{align*}
 y_t = \alpha_tx_t + \epsilon_{1,t} \\
 x_t = \beta_tx_{t-1} + \epsilon_{2,t}
-$$
+\end{align*}
 
-Can easily be changed to accommodate multiple predictors:
+This can easily be changed to accommodate multiple predictors:
 
-$$
+\begin{align*}
 y_t = \alpha_tx_t + \beta_tz_t + \epsilon_{1,t} \\
 x_t = \gamma_tx_{t-1} + \epsilon_{2,t} \\
 z_t = \delta_tz_{t-1} + \epsilon_{3,t}
-$$
+\end{align*}
 
-There are R packages that can be used to run a Kalman Filter such as kalmanfilter these are a good option for us to use since manually coding a Kalman filter would be very complex.
+There are several R packages that can be used to run a Kalman Filter with varying levels of complexity [@tusellKalmanFiltering2011].
 
 # References
