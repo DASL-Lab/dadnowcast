@@ -32,16 +32,13 @@ prepped_data
 
 trained_data <- train_model(prepped_data)
 trained_data
-
-nowcasted <- nowcast(trained_data)
-nowcasted
 ```
 
 ```{r}
 dadnow <- prep_data(
-    dad ~ npos, df, model = "lm", date_col = "date"
+    dad ~ npos, df, model = c("lm", "ar"), date_col = "date"
   ) |>
-  train_model() |>
-  nowcast()
-dadnow$nowcasted_lm
+  train_model()
+
+autoplot(dadnow)
 ```

@@ -48,6 +48,7 @@ prep_data <- function(
   # Also note that lags of the response are somewhat reasonable for some models.
 
   # Create dadnow object
+  dates = data[, date_col]
   return_value <- list(
     formula = formula,
     data = data,
@@ -56,9 +57,11 @@ prep_data <- function(
     order = order,
     X_train = X_train,
     y_train = y_train,
+    dates_train = dates[1:num_non_na],
+    dates_nowcast = dates[(num_non_na + 1):length(dates)],
     X_nowcast = X_nowcast,
     y_nowcast = y_nowcast,
-    dates = data[, date_col],
+    dates = dates,
     require_imputation = require_imputation
   )
   class(return_value) <- "dadnow"
