@@ -9,7 +9,7 @@
 #' @returns Linear model object and predictions
 #' @export
 
-fit_AR <- function(Y_train, X_train = NULL, X_nowcast = NULL, p = 1,d = 0, q = 0, n.ahead = 1) {
+fit_AR <- function(Y_train, X_train = NULL, X_nowcast = NULL, p = 1, d = 0, q = 0, n.ahead = 1) {
   if (n.ahead >= nrow(data.frame(X_nowcast))) {
     n <- n.ahead
   } else {
