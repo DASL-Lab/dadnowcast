@@ -28,10 +28,3 @@ nowcast <- function(dadnow, quiet = FALSE) {
   dadnow
 }
 
-nowcast_lm <- function(trained_lm, X_nowcast) {
-  predict.lm(trained_lm, newdata = data.frame(x = X_nowcast))
-}
-
-nowcast_ar <- function(trained_ar, X_nowcast, order) {
-  predict(trained_ar, newxreg = X_nowcast, se.fit = TRUE)
-}
