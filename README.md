@@ -143,20 +143,39 @@ autoplot(nowcasted)
 Imagine if this was the entire workflow:
 
 ```r
-multimodel <- data |>
-	check_data(
-		formula = list(
-			test_pos = DAD ~ RVDSS,
-			transfers = DAD ~ CNISP + PTSOS,
-			all = DAD ~ RVDSS + CNISP + PTSOS
-		),
-		date_col = "date"
-	) |>
-	impute(method = c("full_linear", "ts", "spline")) |>
-	fit_model(
-		model = c("lm", "multilm", "rf", "xgboost", "arimax"),
-		arima_order = list(c(1,0,0), c(2, 0, 0), c(1, 1, 0), c(0, 0, 1))
-	)
+model_one <- nowcast(
+	formula = DAD ~ RVDSS + CNISP, data = mydata, method = "lm"
+)
+model_two <- nowcast(
+	formula = DAD = CNISP, data = mydata, method = "lm"
+)
+
+models <- compare_models(model_one, model_two)
+summary(models)
+autoplot(models)
+
+# Pie-in-the-sky hopes and dreams
+multimodel <- nowcast(
+	formula = list(
+		"test_pos" = DAD ~ RVDSS,
+		"transfers" = DAD ~ CNISP + PTSOS,
+		"saturated" = DAD ~ RVDSS + CNISP + PTSOS,
+		# AR and KF models will ignore formulae with lags in them
+		"lag_transfers" = DAD ~ lag(CNISP, 2) + lag(PTSOS, 3),
+		"poly_pos" = DAD ~ poly(RVDSS, 3)
+	),
+	data = mydata,
+	date_col = "date_col", # If NULL, guess?
+	method = list(
+		"lm", "arx", "armax", "gam", "randomForest", "kalmanFilter"
+	),
+	params = list(
+		"arx" = list("order" = c(1, 2)),
+		"gam" = list("smooths" = list(c("CNISP", "PTSOS"), c("RVDSS"))),
+		"randomForest" = list("n_trees" = c(100, 500))
+	),
+	eval = c("absolute", "relative")
+)
 
 autoplot(multimodel) +
 	labs(
