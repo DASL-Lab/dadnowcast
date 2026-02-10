@@ -3,14 +3,14 @@
 #' @param formula A formula object.
 #' @param data A data frame.
 #' @param model The model to use for nowcasting. Currently implemented: "lm", "ar". Can be a vector, in which case the model is trained for each model in the vector.
-#' @param order The AR order of the model to be used in `arima()`. Must be a vector of length 1.
+#' @param test_size The proportion of the data to use for testing. If NULL, the data are not split. Defaults to 10% of the data.
 #' @param date_col Name of the column containing date information. If NULL, the date information attempted to be inferred. If there's a single datetime column then it is used. If the data are a ts or mts or zoo object, the dates are esxtracted.
 #' 
 #' @returns Object of class dadnow
 #' @export
 prep_data <- function(
-  formula, data, model, date_col = NULL,
-  quiet = FALSE, order = 1
+  formula, data, model, test_size = 0.1, date_col = NULL,
+  quiet = FALSE
 ) {
   data <- as.data.frame(data) |> 
     parse_dates(date_col = date_col, quiet = quiet)
@@ -22,7 +22,7 @@ prep_data <- function(
     cat("Note: data are not sampled at regular intervals, imputation is required for some models.\n")
   }
 
-  # Training and nowcasting data
+  # Training, test and nowcasting data
   response <- all.vars(formula)[1]
   covariates <- all.vars(formula)[-1]
   stopifnot(all(covariates %in% colnames(data)))
@@ -31,14 +31,18 @@ prep_data <- function(
   trailing_nas <- find_nas(y)
   stopifnot(trailing_nas > 0)
   num_non_na <- length(y) - trailing_nas
+  train_max = floor(num_non_na * (1 - test_size))
+  test_max = num_non_na - train_max
 
   model_matrix <- parse_lag_formula(formula, data)
 
-  X_train <- model_matrix[1:num_non_na, , drop = FALSE]
-  X_nowcast <- model_matrix[(num_non_na + 1):nrow(data), , drop = FALSE]
-  y_train <- y[1:num_non_na]
+  X_train <- model_matrix[1:train_max, , drop = FALSE]
+  X_test <- model_matrix[(train_max + 1):(train_max + test_max), , drop = FALSE]
+  X_nowcast <- model_matrix[(test_max + 1):nrow(data), , drop = FALSE]
+  y_train <- y[1:train_max]
+  y_test <- y[(train_max + 1):(train_max + test_max)]
   # I don't know why this is here - it's all NAs anyway.
-  y_nowcast <- y[(num_non_na + 1):nrow(data)]
+  y_nowcast <- y[(test_max + 1):nrow(data)]
 
   # TODO: Allow for lag terms. There are two options:
   # 1. allow the user to specify the lags in the formula (y ~ lag(x, 1)).
@@ -48,15 +52,16 @@ prep_data <- function(
   # Also note that lags of the response are somewhat reasonable for some models.
 
   # Create dadnow object
-  dates = data[, date_col]
+  dates <- data[, date_col]
   return_value <- list(
     formula = formula,
     data = data,
     model = model,
     date_col = date_col,
-    order = order,
     X_train = X_train,
+    X_test = X_test,
     y_train = y_train,
+    y_test = y_test,
     dates_train = dates[1:num_non_na],
     dates_nowcast = dates[(num_non_na + 1):length(dates)],
     X_nowcast = X_nowcast,
