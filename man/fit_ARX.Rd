@@ -2,22 +2,22 @@
 % Please edit documentation in R/fit_ARX.R
 \name{fit_ARX}
 \alias{fit_ARX}
-\title{Fit an AR model on given data and make predictions for a given set of data with options for using an AR or ARX model}
+\title{Fit an ARX model on given data and make predictions for a given set of data}
 \usage{
 fit_ARX(Y_train, X_train = NULL, X_nowcast = NULL, p = 1)
 }
 \arguments{
 \item{p}{Integer indicating the number of parameters for the AR model}
 
-\item{XTrain}{Training data for the explanatory variables in the model}
+\item{X_Train}{Training data for the explanatory variables in the model}
 
-\item{YTrain}{Training data for the response variable}
+\item{Y_Train}{Training data for the response variable}
 
-\item{XNowcast}{Data to make predictions bases on}
+\item{X_Nowcast}{Data to make predictions bases on}
 }
 \value{
 Linear model object and predictions
 }
 \description{
-Fit an AR model on given data and make predictions for a given set of data with options for using an AR or ARX model
+Fit an ARX model on given data and make predictions for a given set of data
 }

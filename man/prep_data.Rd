@@ -4,7 +4,7 @@
 \alias{prep_data}
 \title{Prepare the data for analysis, returning an object ready for further analysis steps.}
 \usage{
-prep_data(formula, data, model, date_col = NULL, quiet = FALSE, order = 1)
+prep_data(formula, data, model, date_col = NULL, quiet = FALSE)
 }
 \arguments{
 \item{formula}{A formula object.}

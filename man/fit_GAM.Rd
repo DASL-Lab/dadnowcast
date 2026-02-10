@@ -9,7 +9,8 @@ fit_GAM(
   X_train = NULL,
   X_nowcast = NULL,
   family = gaussian,
-  smooths = list()
+  smooths = list(),
+  bs = "tp"
 )
 }
 \arguments{
@@ -17,11 +18,13 @@ fit_GAM(
 
 \item{smooths}{Named list of smoothing parameters for each variable, e.g. \code{list("x1" = 10, "x2")} will result in a formula \code{s(x1, bs = "tp", k = 10) + s(x2, bs = "tp", k = -1) + ...}. If a smoothing parameter is not specified, it will default to -1, which will result \code{mgcv::gam()} choosing the smoothing parameter.}
 
-\item{XTrain}{Training data for the explanatory variables in the model}
+\item{bs}{Basis smoothing function, as used in \code{mgcv::gam()}. Default \code{tp}.}
 
-\item{YTrain}{Training data for the response variable}
+\item{X_Train}{Training data for the explanatory variables in the model}
 
-\item{XNowcast}{Data to make predictions bases on}
+\item{Y_Train}{Training data for the response variable}
+
+\item{X_Nowcast}{Data to make predictions bases on}
 }
 \value{
 GAM model object and predictions

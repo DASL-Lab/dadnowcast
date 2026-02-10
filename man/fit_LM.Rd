@@ -7,11 +7,11 @@
 fit_LM(Y_train, X_train, X_nowcast)
 }
 \arguments{
-\item{XTrain}{Training data for the explanatory variables in the model}
+\item{X_Train}{Training data for the explanatory variables in the model}
 
-\item{YTrain}{Training data for the response variable}
+\item{Y_Train}{Training data for the response variable}
 
-\item{XNowcast}{Data to make predictions bases on}
+\item{X_Nowcast}{Data to make predictions bases on}
 }
 \value{
 Linear model object and predictions

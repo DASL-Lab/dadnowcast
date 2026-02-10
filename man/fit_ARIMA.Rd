@@ -13,11 +13,11 @@ fit_ARIMA(Y_train, X_train = NULL, X_nowcast = NULL, p = 1, d = 0, q = 1)
 
 \item{q}{integer indicating the degree of the MA model}
 
-\item{XTrain}{Training data for the explanatory variables in the model}
+\item{X_Train}{Training data for the explanatory variables in the model}
 
-\item{YTrain}{Training data for the response variable}
+\item{Y_Train}{Training data for the response variable}
 
-\item{XNowcast}{Data to make predictions bases on}
+\item{X_Nowcast}{Data to make predictions bases on}
 }
 \value{
 ARIMA model object and predictions
