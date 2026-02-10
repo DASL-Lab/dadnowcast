@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(fatherStay)
+library(ggplot2)
 ```
 
 This vignette subject to change, and will likely be out of date very shortly.
@@ -40,5 +41,6 @@ dadnow <- prep_data(
   ) |>
   train_model()
 
-autoplot(dadnow)
+autoplot(dadnow) +
+  theme_bw()
 ```

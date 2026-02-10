@@ -2,6 +2,7 @@
 #'
 #' @description Simulation for testing/example purposes
 #'
+#' @export
 simulate_data <- function(
   cnisp_samp_prop = 0.2, ptsos_samp_prop = 0.3,
   virulence = 0.05,
