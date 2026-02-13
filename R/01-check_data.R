@@ -12,6 +12,7 @@ prep_data <- function(
   formula, data, model, test_size = 0.1, date_col = NULL,
   quiet = FALSE
 ) {
+  # Ensures data has a valid date column and that it's sorted by date
   data <- as.data.frame(data) |> 
     parse_dates(date_col = date_col, quiet = quiet)
   
@@ -26,6 +27,13 @@ prep_data <- function(
   response <- all.vars(formula)[1]
   covariates <- all.vars(formula)[-1]
   stopifnot(all(covariates %in% colnames(data)))
+
+  # interpolate missing values
+  if (interpolate) {
+    for (covariate in covariates) {
+      data[[covariate]] <- impute_linear(data[, date_col], data[[covariate]])
+    }
+  }
 
   y <- data[, response]
   trailing_nas <- find_nas(y)
@@ -80,6 +88,7 @@ parse_dates <- function(data, date_col, quiet) {
   if (length(dates) != length(unique(dates))) {
     stop("There are repeated dates.")
   }
+  if (any(is.na(dates))) stop("Cannot have NA in date_col.")
   if (!inherits(dates, "Date")) {
     dates <- tryCatch(
       parse_date_time(dates, c("ymd", "dmy", "mdy", "mdy")),
