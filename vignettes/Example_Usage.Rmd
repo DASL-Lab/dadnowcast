@@ -30,13 +30,14 @@ tail(df, 12) # last 10 are NA - to be nowcast!
 
 ```{r}
 dadnow2 <- nowcast_one(
-  dad ~ npos, df, model = "ar", date_col = "date", params = list(order = 1)
+  dad ~ lag(npos, 5), df, model = "ar", date_col = "date", params = list(order = 1)
 )
 
 dadnow2 <- add_model(dadnow2, model = "ar", params = list(order = 2)) |>
   add_model(model = "lm") |>
   add_model(model = "arx", params = list(order = 1)) |>
-  add_model(model = "gam", params = list(smooths = list("npos"=10)))
+  add_model(model = "gam", params = list(smooths = list("npos_lag0"=10))) |>
+  add_model(model = "rf", params = list(ntree = 500, mtry = 3))
 dadnow2
 autoplot(dadnow2, last_n = 15)
 ```
