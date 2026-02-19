@@ -82,7 +82,8 @@ check_params <- function(params, model, verbose = TRUE) {
     "lm" = list(),
     "ar" = list(order = 1),
     "arx" = list(order = 1),
-    "gam" = list(smooths = NULL)
+    "gam" = list(smooths = NULL),
+    "rf" = list(ntree = 500, mtry = floor(sqrt(ncol(X_train))))
   )
   if (model == "lm") {
     return(NULL)
@@ -137,11 +138,13 @@ dispatch_model <- function(model, x_train, y_train, x_nowcast, params) {
     "gam" = fit_GAM(X_train = x_train,
       Y_train = y_train,
       X_nowcast = x_nowcast, smooths = params$smooths),
-    "kf" = fit_KF(X_train = x_train,
+    "kf" = fit_KalmanFilter(X_train = x_train,
       Y_train = y_train,
-      X_nowcast = x_nowcast, p = params$order),
+      X_nowcast = x_nowcast,
+      degree = params$degree),
     "rf" = fit_RF(X_train = x_train,
       Y_train = y_train,
-      X_nowcast = x_nowcast)
+      X_nowcast = x_nowcast,
+      mtry = params$mtry, ntree = params$ntree)
   )
 }
