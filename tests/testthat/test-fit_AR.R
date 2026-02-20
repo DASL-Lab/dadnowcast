@@ -4,9 +4,9 @@ test_that("fit simple AR model works", {
   expect_equal(test_mod[[1]]$coef[[1]], 0.2423, tolerance = 0.001)
   expect_equal(test_mod[[1]]$coef[[2]], -0.1160, tolerance = 0.001)
   expect_equal(test_mod[[1]]$coef[[3]], -0.2140, tolerance = 0.001)
-  expect_equal(test_mod$prediction[[1]], -0.6855, tolerance = 0.001)
-  expect_equal(test_mod$prediction[[2]], -0.1056, tolerance = 0.001)
-  expect_equal(test_mod$prediction[[3]], -0.1330, tolerance = 0.001)
+  expect_equal(test_mod$prediction[1], -0.6855, tolerance = 0.001)
+  expect_equal(test_mod$prediction[2], -0.1056, tolerance = 0.001)
+  expect_equal(test_mod$prediction[3], -0.1330, tolerance = 0.001)
 })
 
 test_that("fit ARX model works", {

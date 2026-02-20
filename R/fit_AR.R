@@ -21,7 +21,7 @@ fit_AR <- function(Y_train, X_train = NULL, X_nowcast = NULL, p = 1, d = 0, q = 
   #  AR and ARX models!
   AR_mod <- arima(Y_train, order = c(p, d, q), xreg = X_train)
 
-  predictions <- predict(AR_mod, n, X_nowcast)
+  predictions <- as.numeric(predict(AR_mod, n, X_nowcast)$pred)
 
-  list(model = AR_mod, prediction = predictions$pred)
+  list(model = AR_mod, prediction = predictions)
 }
