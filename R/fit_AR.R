@@ -10,7 +10,7 @@
 #' @export
 
 fit_AR <- function(Y_train, X_train = NULL, X_nowcast = NULL, params = list(p = 1, d = 0, q = 0, n.ahead = 1)) {
-  if (is.null(params$n.ahead)) {
+  if (!"n.ahead" %in% names(params)) {
     n <- nrow(data.frame(X_nowcast))
   } else {
     if (params$n.ahead >= nrow(data.frame(X_nowcast))) {
@@ -20,19 +20,19 @@ fit_AR <- function(Y_train, X_train = NULL, X_nowcast = NULL, params = list(p = 
     }
   }
   
-  if (is.null(params$p)) {
+  if (!"p" %in% names(params)) {
     p <- 0
   } else {
     p <- params$p
   }
   
-  if (is.null(params$d)) {
+  if (!"d" %in% names(params)) {
     d <- 0
   } else {
     d <- params$d
   }
   
-  if (is.null(params$q)) {
+  if (!"q" %in% names(params)) {
     q <- 0
   } else {
     q <- params$p

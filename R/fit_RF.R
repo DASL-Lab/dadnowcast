@@ -31,13 +31,13 @@ fit_RF <- function(Y_train, X_train = NULL, X_nowcast = NULL,
 
   data <- data.frame(X_train, Y_train)
 
-  if (is.null(params$ntree)) {
+  if (!"ntree" %in% names(params)) {
     ntree <- 500
   } else {
     ntree <- params$ntree
   }
 
-  if (is.null(params$mtry)) {
+  if (!"mtry" %in% names(params)) {
     mtry <- if(!is.null(Y_train) && !is.factor(Y_train)) {
       max(floor(ncol(X_train) / 3), 1)
     } else {
@@ -47,19 +47,19 @@ fit_RF <- function(Y_train, X_train = NULL, X_nowcast = NULL,
     mtry <- params$mtry
   }
 
-  if (is.null(params$weights)) {
+  if (!"weights" %in% names(params)) {
     weights <- NULL
   } else {
     weights <- params$weights
   }
 
-  if (is.null(params$replace)) {
+  if (!"replace" %in% names(params)) {
     replace <- TRUE
   } else {
     replace <- params$replace
   }
 
-  if (is.null(params$maxnodes)) {
+  if (!"maxnodes" %in% names(params)) {
     maxnodes <- NULL
   } else {
     maxnodes <- params$maxnodes
