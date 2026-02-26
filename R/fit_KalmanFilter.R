@@ -17,7 +17,7 @@ fit_KalmanFilter <- function(Y_train, X_train = NULL, X_nowcast = NULL,
     return(list(model = NULL, prediction = NULL))
   }
   
-  if (is.null(params$degree)) {
+  if (!"degree" %in% names(params)) {
     degree <- 1
   } else {
     degree <- params$degree

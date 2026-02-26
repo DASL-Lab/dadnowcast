@@ -16,19 +16,19 @@ fit_GAM <- function(
 ) {
   full_data <- as.data.frame(cbind(Y_train, X_train))
 
-  if (is.null(params$family)) {
+  if (!"family" %in% names(params)) {
     family <- gaussian
   } else {
     family <- params$family
   }
   
-  if (is.null(params$smooths)) {
+  if (!"smooths" %in% names(params)) {
     smooths <- list()
   } else {
     smooths <- params$smooths
   }
   
-  if (is.null(params$bs)) {
+  if (!"bs" %in% names(params)) {
     bs <- "tp"
   } else {
     bs <- params$bs
