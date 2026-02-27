@@ -3,16 +3,12 @@
 #' @param X_Train Training data for the explanatory variables in the model
 #' @param Y_Train Training data for the response variable
 #' @param X_Nowcast Data to make predictions bases on
-#' @param ntree Integer indicating the number of trees in the random forest, default is 500
-#' @param mtry Indicates the number of features to try in each node of the Random Forest. Default is the default for randomForest
-#' @param weights A vector of length same as y that are positive weights used only in sampling data to grow each tree (not used in any other calculation)
-#' @param replace Should sampling of cases be done with or without replacement?
-#' @param maxnodes Maximum number of terminal nodes trees in the forest can have.
+#' @param params A named list containing options for the parameters used by `xgboost::xgb.train`
 #'
 #' @returns XGBoost object and predictions
 #' @export
 
-fit_XGBoost <- function(Y_train, X_train = NULL, 
+fit_XGBoost <- function(Y_train, X_train = NULL, X_nowcast = NULL,
                    params = list(nrounds = NULL, evals = list(), 
                                  objective = NULL, verbose = 1,
                                  XGBparams = list())) {
