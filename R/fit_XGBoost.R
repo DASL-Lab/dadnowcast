@@ -23,31 +23,31 @@ fit_XGBoost <- function(Y_train, X_train = NULL, X_nowcast = NULL,
   data <- data.frame(X_train, Y_train)
   dMatrixTrain <- xgb.DMatrix(data, label = Y_train)
   
-  if (is.null(params$nrounds)) {
+  if (!"nrounds" %in% names(params)) {
     nrounds <- 10
   } else {
     nrounds <- params$nrounds
   }
   
-  if (is.null(params$evals)) {
+  if (!"evals" %in% names(params)) {
     evals <- list()
   } else {
     evals <- params$evals
   }
   
-  if (is.null(params$objective)) {
+  if (!"objective" %in% names(params)) {
     objective <- NULL
   } else {
     objective <- params$objective
   }
   
-  if (is.null(params$verbose)) {
+  if (!"verbose" %in% names(params)) {
     verbose <- 1
   } else {
     verbose <- params$verbose
   }
   
-  if (is.null(params$XGBparams)) {
+  if (!"XGBparams" %in% names(params)) {
     xgbParams2 = xgb.params()
   } else {
     xgbParams2 <- params$XGBparams
