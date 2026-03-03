@@ -14,8 +14,9 @@ prep_data <- function(
 ) {
   # Ensures data has a valid date column and that it's sorted by date
   data <- as.data.frame(data) |> 
-    parse_dates(date_col = date_col, quiet = quiet)
-  
+    parse_dates(date_col = date_col, quiet = quiet) |>
+    dplyr::arrange(date)
+
   diffs <- diff(data[, date_col])
   diffs <- diffs[!is.na(diffs)]
 
@@ -27,7 +28,7 @@ prep_data <- function(
   # interpolate missing values
   if (interpolate) {
     for (covariate in covariates) {
-      data[[covariate]] <- impute_linear(data[, date_col], data[[covariate]])
+      data[[covariate]] <- impute_linear(dates = data[, date_col], x = data[[covariate]])
     }
   }
 

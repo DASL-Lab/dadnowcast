@@ -19,7 +19,7 @@ nowcast_one <- function(
     formula, data, model, test_size, date_col = date_col
   )
   
-  model_id <- make_model_id(as.character(substitute(model)), params)
+  model_id <- make_model_id(model, params)
 
   x_train <- prepped_data$X_train
   y_train <- prepped_data$y_train
@@ -64,7 +64,8 @@ fit_model_test <- function(model, params, x_train, y_train, x_test, y_test) {
 }
 
 make_model_id <- function(model, params) {
-  model_id <- paste0("nowcast_", as.character(substitute(model)), "_",
+  if (!is.character(model)) model <- as.character(substitute(model))
+  model_id <- paste0("nowcast_", model, "_",
     paste0(names(params), params, collapse = "_")
   )
   gsub("_$", "", model_id)
@@ -79,6 +80,7 @@ dispatch_model <- function(model, x_train, y_train, x_nowcast, params) {
     "gam" = fit_GAM,
     "kf" = fit_KalmanFilter,
     "rf" = fit_RF,
+    "xgboost" = fit_XGBoost,
     model
   )
 }
