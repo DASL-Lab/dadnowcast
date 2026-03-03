@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(fatherStay)
+devtools::load_all()
 library(ggplot2)
 ```
 
@@ -38,6 +38,10 @@ dadnow2 <- add_model(dadnow2, model = "ar", params = list(order = 2)) |>
   add_model(model = "arx", params = list(order = 1)) |>
   add_model(model = "gam", params = list(smooths = list("npos_lag0"=10))) |>
   add_model(model = "rf", params = list(ntree = 500, mtry = 3))
+dadnow2 <- add_model(dadnow2, model = "xgboost", params = list(nrounds = 100))
+
 dadnow2
+
 autoplot(dadnow2, last_n = 15)
+
 ```
