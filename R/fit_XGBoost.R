@@ -21,7 +21,7 @@ fit_XGBoost <- function(Y_train, X_train = NULL, X_nowcast = NULL,
   Y_train <- data.frame(Y_train)
   X_train <- data.frame(X_train)
   data <- data.frame(X_train, Y_train)
-  dMatrixTrain <- xgb.DMatrix(data, label = Y_train)
+  dMatrixTrain <- xgboost::xgb.DMatrix(data, label = Y_train)
   
   if (!"nrounds" %in% names(params)) {
     nrounds <- 10
