@@ -47,7 +47,7 @@ fit_XGBoost <- function(Y_train, X_train = NULL, X_nowcast = NULL,
   }
   
   if (!"XGBparams" %in% names(params)) {
-    xgbParams2 = xgb.params()
+    xgbParams2 = xgboost::xgb.params()
   } else {
     xgbParams2 <- params$XGBparams
   }
@@ -60,7 +60,7 @@ fit_XGBoost <- function(Y_train, X_train = NULL, X_nowcast = NULL,
   
   X_nowcast <- as.matrix(X_nowcast)
   
-  dMatrixPred <- xgb.DMatrix(data = X_nowcast, label = yNow)
+  dMatrixPred <- xgboost::xgb.DMatrix(data = X_nowcast, label = yNow)
   
   predictions <- predict(XGBModel, newdata = dMatrixPred)
   
