@@ -1,0 +1,87 @@
+---
+title: "Model_Details"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Model_Details}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This vignette details the specific models used in this package, along with their parameters of interest, along with some of the relevant theory behind them.
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(fatherStay)
+```
+
+# Linear Model
+
+The first and simplest models that we will be looking at in this project are linear models where the value of DAD we are nowcasting is dependent on the current values of the explanatory variables:
+$$
+y_t = \alpha_0 x_t + \beta_1 z_{t,1} + \beta_2 z_{t,2} + \epsilon_t
+$$
+
+We can build on this basic model by adding the complexity of lagging the values of the explanatory variables:
+$$
+y_t = \alpha_0 x_t + \alpha_1 x_{t-1} + \beta_1 z_{t,1} + \beta_2 z_{t,2} + \epsilon_t
+$$  
+
+The usage of these models in the package is very simple. The function `fit_LM` fits a linear model with given parameters, there are options for `Y_train`, `X_train`, and `X_nowcast`, which represent the observed response variable, the correlating observed explanatory variables, and the observations of the explanatory variables that have no corresponding response variable observations. There are no options for any other parameters in this model.
+
+# AR
+
+The function `fit_AR` fits a basic Auto-Regressive (AR) model on the response variable `Y_train`, and takes a parameter `n.ahead` to indicate how many predictions the function should make, as well as a parameter `p` which indicates the degree of the AR model. This function also includes many parameter options to fit many more advanced variations of AR models, but these are for the convenience of future functions. An AR(p) model follows the form:
+
+$$
+y_t = \sum_{i=0}^p \beta_{t-i} y_{t-i}
+$$
+
+## ARX
+
+The first variation is the function `fit_ARX` which fits an AR model with exogenous factors. An ARX model follows the form:
+
+$$
+y_t = \sum_{i=0}^n \alpha_{t-i} x_{t-i} + \sum_{i=0}^p \gamma_{t-i} z_{t-i,1} + \sum_{i=0}^p \gamma_{t-i} z_{t-i,2} + \sum_{j=1}^m \beta_{t-i} y_{t-i} + \epsilon_t
+$$
+
+The function `fit_ARX` takes the arguments `Y_train`, `X_train`, `X_nowcast`, and a `params` argument `p` which indicates the degree of the AR model. While it is still possible to use `n.ahead` in `fit_ARX`, it is unnecessary due to the function automatically using the length of `X_nowcast` as the number of predictions to make.
+
+## ARIMAX
+
+A natural extension of the AR model is to add the moving average (MA) and integration parts (I) to make a function that fits ARIMAX models. The function then follows the form:
+
+$$
+(1 - \sum^p_{i=1}\alpha_iL^{i}) X_t = (1 + \sum^q_{i=1}\theta_iL^{i})
+$$
+
+The function `fit_ARIMA` takes arguments `Y_train`, `X_train`, `X_nowcast`, and `params` arguments: `p` which indicates the degree of the AR portion, `d` which indicates the degree of differencing, and `q` which indicates the MA degree.
+
+# GAM
+
+The function `fit_GAM` fits generalized additive models, it takes the general form:
+
+$$
+y_t = \sum_{i=0}^n \alpha_i b_i(x_{t}) + \sum_{j=0}^m \beta_j b_j(z_{t,1}) + \sum_{k=0}^l \gamma_k b_k(z_{t,2}) + \epsilon_t
+$$  
+
+Where $b_i(), \ b_j(), \ b_k()$ are all basis splines.
+
+The function `fit_GAM` fits a GAM function on the given data in the form of `Y_train`, `X_train`, and `X_nowcast`. There are multiple `params` options to specify parameters for the type of GAM function that is desired; `family` specifies the distribution and link function for the model, `smooths` is a named list indicating which smoothing parameters to use on each variable, `bs` giving the basis smoothing function. Each of these parameters are optional and have appropriate built in defaults, but the parameters allow for a highly customizable function.
+
+# Random Forest
+
+The function `fit_RF` fits a random forest model on the given data using the package `randomForest`. This function uses the same data variables, `Y_train`, `X_train`, and `X_nowcast`. There are parameters, `ntree` which specifies the number of trees to grow the default is 500, `mtry` is the number of variables used as candidates at each split the default value is the square root of the number of explanatory variables used in the model, `weights` for weighting the sample data, `replace` specifies if sampling should be done with or without replacement the default is TRUE. The final two options are both for limiting the size of the trees grown which is not necessary to do manually but is a very nice option to have, especially if computing time is a concern. They are different methods of limiting the size of the tree: `maxnodes` which limits the number of terminal nodes that a tree can have which defaults to letting the tree grow without restriction, and `nodesize` which sets the minimum size of the terminal nodes and defaults to 5.
+
+# XGBoost
+
+An extension of random forests, by creating multiple forests and picking the best options
+
+# Kalman Filter
+
+The function `fit_KF` uses the package `KFAS` to create a Kalman-Filter on the given data.
