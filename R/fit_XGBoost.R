@@ -57,7 +57,6 @@ fit_XGBoost <- function(Y_train, X_train = NULL, X_nowcast = NULL,
     
   nrounds2 <- which(XGBCV$evaluation_log$test_rmse_mean == min(XGBCV$evaluation_log$test_rmse_mean))
   
-  print(nrounds2)
   # traing the model
   XGBModel <- xgboost::xgb.train(
     data = dMatrixTrain, params = xgbParams2, nrounds = nrounds2, evals = evals, 
