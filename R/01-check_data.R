@@ -49,9 +49,6 @@ prep_data <- function(
   # I don't know why this is here - it's all NAs anyway.
   y_nowcast <- y[(num_non_na + 1):nrow(data)]
 
-  if(is.null(cross_val_indices)) {
-    cross_val_indices <- sample(1:folds, nrow(X_train), replace = TRUE)
-  }
 
   # Create dadnow object
   dates <- data[, date_col]
@@ -61,7 +58,6 @@ prep_data <- function(
     date_col = date_col,
     X_train = X_train,
     y_train = y_train,
-    cross_val_indices = cross_val_indices,
     dates_train = dates[1:(num_non_na)],
     dates_nowcast = dates[(num_non_na + 1):length(dates)],
     X_nowcast = X_nowcast,

@@ -81,7 +81,7 @@ autoplot(dadnow3, last_n = 5)
 The `add_model()` interface allows for new formulas to be specified when adding new models. 
 
 ```{r}
-dadnow4 <- add_model(dadnow3, formula = dad ~ lag(npos, 5) + lag(cnisp, 5) + lag(ptsos, 5), model = "xgboost", params = list(nrounds = 100)) |>
+dadnow4 <- add_model(dadnow3, formula = dad ~ lag(npos, 5) + lag(cnisp, 5) + lag(ptsos, 5), model = "xgboost", params = list(nrounds = 50)) |>
   add_model(formula = dad ~ lag(npos, 5) + lag(cnisp, 5) + lag(ptsos, 5), model = "lm") |>
   add_model(formula = dad ~ lag(npos, 5) + lag(cnisp, 5) + lag(ptsos, 5), model = "ar", params = list(order = 1))
 dadnow4
@@ -103,6 +103,7 @@ gg_dadnow / gg_ptsos / gg_cnisp
 - ~~Prediction intervals~~
   - Plot the prediction intervals well (esp with many models)
   - Take prediction intervals from model output where possible?
+  - Expose options to user (e.g., how many models to use for prediction intervals, prediction interval level, etc.)
   
 - Built-in plots for nowcast against covariates
   - One covariate at a time
