@@ -140,6 +140,7 @@ nowcast_mechanistic <- function(
 
   cat(
     paste0(
+      "I see the formula \"", deparse(formula), "\"\n",
       "Assuming that \"", response, "\" contains DAD data, \"", 
       terms[1], "\" is CNISP, \"", terms[2], "\" is PTSOS, and \"",
       terms[3], "\" is RVDSS.\n"
@@ -149,7 +150,7 @@ nowcast_mechanistic <- function(
   enbpi <- enbpi(
     X_train = prepped_data$X_train,
     y_train = prepped_data$y_train,
-    formula = "mechanistic",
+    formula = paste0("mech_", params$method),
     model = "mechanistic",
     params = params,
     k = nrow(prepped_data$X_nowcast),
