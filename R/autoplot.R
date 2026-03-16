@@ -5,7 +5,7 @@
 autoplot.dadnow <- function(dadnow, last_n = NULL) {
   plot_data <- data.frame(
     x = dadnow$data$dates_train,
-    y = c(dadnow$data$y_train, dadnow$data$y_test),
+    y = dadnow$data$y_train,
     method = "Training Data"
   )
   if (is.null(last_n)) last_n <- length(dadnow$data$dates_nowcast)
@@ -33,9 +33,7 @@ autoplot.dadnow <- function(dadnow, last_n = NULL) {
 autoplot.multidadnow <- function(multidadnow, last_n = NULL) {
   plot_data <- data.frame(
     x = multidadnow$models[[1]]$prepped_data$dates_train,
-    y = c(
-      multidadnow$models[[1]]$prepped_data$y_train,
-      multidadnow$models[[1]]$prepped_data$y_test),
+    y = multidadnow$models[[1]]$prepped_data$y_train,
     method = "Training Data"
   )
   if (is.null(last_n)) last_n <- length(dadnow$data$dates_nowcast)
