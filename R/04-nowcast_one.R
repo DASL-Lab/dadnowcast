@@ -12,7 +12,7 @@
 #'
 #' @export
 nowcast_one <- function(
-    formula, data, model, test_size = 0.1, params = NULL, date_col = NULL
+    formula, data, model, batches = 40, train_window = NULL, level = 0.95, test_size = 0.1, params = NULL, date_col = NULL
   ) {
 
   prepped_data <- prep_data(
@@ -31,6 +31,8 @@ nowcast_one <- function(
   # Fit to training, evaluate on test
   evals <- cross_val_error(x_train, y_train, prepped_data$cross_val_indices, model, params)
 
+  enbpi <- enbpi(X_train = x_train, y_train = y_train, model = model, params = params, k = nrow(x_now), batches = batches, train_window = train_window, level = level)
+
   # Fit to all training, create nowcast
   nowcast <- dispatch_model(model)(
     X_train = rbind(x_train, x_test),
@@ -38,20 +40,24 @@ nowcast_one <- function(
     X_nowcast = x_now,
     params = params
   )
-  nowcast$params <- params
 
   dadnow_obj <- list(
-    model_id = model_id,
-    formula = formula,
     date_col = date_col,
     data = as.data.frame(data),
-    prepped_data = prepped_data,
-    model = nowcast$model,
-    predictions = nowcast$prediction,
-    evals = evals,
-    params = params
+    models = list(
+      list(
+        model_id = model_id,
+        formula = formula,
+        prepped_data = prepped_data,
+        model = nowcast$model,
+        predictions = nowcast$prediction,
+        evals = evals,
+        params = params
+      )
+    )
   )
-  class(dadnow_obj) <- "dadnow"
+  names(dadnow_obj$models)[1] <- model_id
+  class(dadnow_obj) <- "multidadnow"
 
   dadnow_obj
 }

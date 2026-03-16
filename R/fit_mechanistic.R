@@ -157,14 +157,19 @@ nowcast_mechanistic <- function(
 
   dadnow_mech <- fit_mechanistic(Dt, Ct, Pt, Rt, Rt_nowcast, params$sc, params$sp, params$method)
   dadnow <- list(
-    model_id = paste0("mech_", params$method),
-    formula = paste0("mech_", params$method),
     date_col = date_col,
-    prepped_data = prepped_data,
-    model = dadnow_mech$model,
-    predictions = dadnow_mech$predictions,
-    evals = eval,
-    params = params
+    data = as.data.frame(data),
+    models = list(
+      list(
+        model_id = paste0("mech_", params$method),
+        formula = paste0("mech_", params$method),
+        prepped_data = prepped_data,
+        model = dadnow_mech$model,
+        predictions = dadnow_mech$predictions,
+        evals = eval,
+        params = params
+      )
+    )
   )
   
   class(dadnow) <- "dadnow"
