@@ -22,9 +22,9 @@ library(ggplot2)
 This vignette is currently my testing grounds, and ensure that basic functionality works whenever I make a change to the backend.
 
 ```{r}
-df <- simulate_data() |>
-  dplyr::filter(prov == "ON")
+df <- simulate_mechanistic()
 tail(df, 12) # last 10 are NA - to be nowcast!
+pairs(df[, -1])
 ```
 
 The basic usage of the package involves the "nowcast" function, which fits a single nowcasting model to the data. The formula interface is used to specify the response variable and covariates, and lags can be specified using the "lag" function. The function converts the data into a standard format across all models so that a single "dadnow" object can be used to store the results of multiple models, and the same plotting and evaluation functions can be used regardless of the underlying model.
@@ -50,7 +50,7 @@ dadnow2 <- add_model(dadnow2, model = "xgboost", params = list(nrounds = 100))
 
 dadnow2
 
-autoplot(dadnow2, last_n = 5) +
+autoplot(dadnow2, last_n = 50) +
   theme_bw()
 
 ```

@@ -78,7 +78,7 @@ simulate_data <- function(
 
 
 simulate_ar <- function(
-  prov, dates, round_to = 0, intercept = TRUE, truncate = FALSE
+  prov, dates, round_to = 0, intercept = TRUE, truncate = FALSE, softmax = TRUE
 ) {
   lapply(
     names(prov),
@@ -94,10 +94,61 @@ simulate_ar <- function(
         prov = x,
         count = round(this_ts, round_to)
       )
-      if (truncate) res <- res |>
-        dplyr::mutate(count = dplyr::if_else(count < 0, 0, count))
+      if (truncate) {
+        res <- res |>
+          dplyr::mutate(count = dplyr::if_else(count < 0, 0, count))
+      } else if (softmax) {
+        res <- res |>
+          dplyr::mutate(count = round(exp(count), round_to))
+      }
       res
-    }
+      }
   ) |>
     dplyr::bind_rows()
+}
+
+#' Simulate from the mechanistic model
+#' 
+#' @param ar1,ar2,sigma The AR parameters for the RVDSS.
+#' @param eta The scaling factor for the CNISP and PTSOS and DAD.
+#' @param sc,sp The scaling factors for the CNISP and PTSOS data.
+#' @param to_nowcast The number of days to nowcast.
+#' 
+#' @returns A dataframe with simulated data for DAD, CNISP, PTSOS, and RVDSS.
+#' @export
+simulate_mechanistic <- function(
+  to_nowcast = 10,
+  ar1 = 0.65, ar2 = 0.3, sigma = 0.1,
+  eta = 0.2, sc = 0.2, sp = 0.3
+) {
+  
+
+  dates <- seq(
+    lubridate::ymd("2020-01-01"),
+    lubridate::ymd("2021-12-31"),
+    by = "week"
+  )
+
+  Rt_neg <- arima.sim(
+    model = list(order = c(2, 0, 0), ar = c(ar1, ar2)),
+    n = length(dates),
+    sd = sigma
+  ) |> as.numeric()
+
+  # New Rt range: 0 to 50,000
+  Rt <- 50000 * (Rt_neg - min(Rt_neg)) / (max(Rt_neg) - min(Rt_neg))
+  Dt = rnbinom(length(Rt), mu = eta * Rt, size = 5)
+  Ct = rnbinom(length(Rt), mu = eta * sc * Rt, size = 5)
+  Pt = rnbinom(length(Rt), mu = eta * sp * Rt, size = 5)
+
+  Dt[(length(Dt) - to_nowcast + 1):length(Dt)] <- NA
+
+  dad <- data.frame(
+    date = dates,
+    dad = Dt,
+    cnisp = Ct,
+    ptsos = Pt,
+    npos = Rt
+  )
+  dad
 }
