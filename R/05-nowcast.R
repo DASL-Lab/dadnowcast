@@ -20,7 +20,7 @@ nowcast <- function(
     formula, data, model, date_col = date_col
   )
   
-  model_id <- make_model_id(model, params)
+  model_id <- make_model_id(model, formula)
 
   x_train <- prepped_data$X_train
   y_train <- prepped_data$y_train
@@ -78,12 +78,44 @@ nowcast <- function(
   dadnow_obj
 }
 
-make_model_id <- function(model, params) {
-  if (!is.character(model)) model <- as.character(substitute(model))
-  model_id <- paste0(model, "_",
-    paste0(names(params), params, collapse = "_")
-  )
-  gsub("_$", "", model_id)
+make_model_id <- function(model, formula, models = NULL) {
+  if (is.null(models)) {
+    return("m1p1a")
+  }
+
+  current_models <- lapply(models, function(x) x$model_id) |> unique()
+  if (model %in% current_models) {
+    model_index <- which(current_models == model)
+  } else {
+    model_index <- length(current_models) + 1
+  }
+
+  formulas <- lapply(models, function(x) x[["formula"]]) |> unique()
+  if (list(formula) %in% formulas) {
+    formula_index <- which(formulas == formula)
+  } else {
+    formula_index <- length(formulas) + 1
+  }
+
+  param_index <- 1
+  for (this_model in models) {
+    if (this_model$model_id == model && all.equal(this_model[["formula"]], formula)) {
+      param_index <- param_index + 1
+    }
+  }
+  
+  paste0("m", model_index, "p", formula_index, letters[param_index])
+}
+
+make_new_model_ids <- function(multidadnow) {
+
+  for (i in seq_along(multidadnow$models)) {
+    new_model_id <- make_model_id(multidadnow$models[[i]]$model_id, multidadnow$models[[i]]$formula, multidadnow$models[1:i])
+    names(multidadnow$models)[i] <- new_model_id
+    multidadnow$models[[i]]$model_id <- new_model_id
+  }
+
+  multidadnow
 }
 
 dispatch_model <- function(model, x_train, y_train, x_nowcast, params) {
@@ -121,6 +153,9 @@ nowcast_mechanistic <- function(
     formula, data, model = "mechanistic", date_col = date_col
   )
 
+  
+  model_id <- make_model_id(model = "mechanistic", formula)
+
   response <- all.vars(formula)[1]
   terms <- all.vars(formula)[-1]
 
@@ -136,7 +171,7 @@ nowcast_mechanistic <- function(
   enbpi <- enbpi(
     X_train = prepped_data$X_train,
     y_train = prepped_data$y_train,
-    formula = paste0("mech_", params$method),
+    formula = formula,
     model = "mechanistic",
     params = params,
     k = nrow(prepped_data$X_nowcast),
