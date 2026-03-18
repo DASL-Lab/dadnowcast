@@ -52,7 +52,7 @@ add_model.dadnow <- function(dadnow, formula = NULL, model, params = NULL) {
     date_col = dadnow$date_col,
     prepped_data = dadnow$prepped_data,
     model = dadnow$model,
-    predictions = dadnow$predictions,
+    predictions = dadnow$prediction$prediction,
     evals = dadnow$evals,
     params = params
   )
@@ -63,7 +63,7 @@ add_model.dadnow <- function(dadnow, formula = NULL, model, params = NULL) {
     date_col = dadnow$date_col,
     prepped_data = prepped_data,
     model = new_preds$model,
-    predictions = new_preds$prediction,
+    predictions = new_preds$prediction$prediction,
     evals = new_eval,
     params = params
   )
@@ -122,7 +122,7 @@ add_model.multidadnow <- function(multidadnow, formula = NULL, model, params = N
   aug_data <- as.data.frame(multidadnow$data)
 
   nowcasted_data <- aug_data[(nrow(prepped_data$X_train) + 1):nrow(aug_data), ]
-  nowcasted_data[, prepped_data$response] <- new_preds$prediction
+  nowcasted_data[, prepped_data$response] <- new_preds$prediction$prediction
   nowcasted_data$model <- model
   nowcasted_data$params <- paste0(names(params), params, collapse = "_")
   nowcasted_data$pi_lower <- enbpi$enbpi[, 1]
@@ -137,7 +137,7 @@ add_model.multidadnow <- function(multidadnow, formula = NULL, model, params = N
     date_col = multidadnow$date_col,
     prepped_data = prepped_data,
     model = new_preds$model,
-    predictions = new_preds$prediction,
+    predictions = new_preds$prediction$prediction,
     evals = enbpi$evals,
     params = params
   )

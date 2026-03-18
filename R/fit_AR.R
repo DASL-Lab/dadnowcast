@@ -44,7 +44,7 @@ fit_AR <- function(Y_train, X_train = NULL, X_nowcast = NULL, params = list(p = 
   
   preds <- predict(AR_mod, n, X_nowcast)
 
-  predictions <- data.frame(preds$pred, preds$se)
+  predictions <- data.frame(prediction = preds$pred, lower = preds$pred - 1.96 * preds$se, upper = preds$pred + 1.96 * preds$se)
   
   fitVals <- Y_train - AR_mod$residuals
 

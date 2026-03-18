@@ -44,7 +44,7 @@ nowcast <- function(
   aug_data <- aug_data[order(aug_data[, prepped_data$date_col]), ]
   
   nowcasted_data <- aug_data[(nrow(x_train) + 1):nrow(aug_data), ]
-  nowcasted_data[, prepped_data$response] <- nowcast$prediction
+  nowcasted_data[, prepped_data$response] <- nowcast$prediction$prediction
   nowcasted_data$model <- model
   nowcasted_data$params <- paste0(names(params), params, collapse = "_")
   nowcasted_data$pi_lower <- enbpi$enbpi[, 1]
@@ -65,7 +65,7 @@ nowcast <- function(
         formula = formula,
         prepped_data = prepped_data,
         model = nowcast$model,
-        predictions = nowcast$prediction,
+        predictions = nowcast$prediction$prediction,
         evals = enbpi$evals,
         enbpi = enbpi$enbpi,
         params = params
@@ -159,7 +159,7 @@ nowcast_mechanistic <- function(
   aug_data <- aug_data[order(aug_data[, prepped_data$date_col]), ]
   
   nowcasted_data <- aug_data[(nrow(prepped_data$X_train) + 1):nrow(aug_data), ]
-  nowcasted_data[, prepped_data$response] <- dadnow_mech$prediction
+  nowcasted_data[, prepped_data$response] <- dadnow_mech$prediction$prediction
   nowcasted_data$model <- paste0("mech_", params$method)
   nowcasted_data$params <- paste0(names(params), params, collapse = "_")
   nowcasted_data$pi_lower <- enbpi$enbpi[, 1]
@@ -180,7 +180,7 @@ nowcast_mechanistic <- function(
         formula = paste0("mech_", params$method),
         prepped_data = prepped_data,
         model = dadnow_mech$model,
-        predictions = dadnow_mech$predictions,
+        predictions = dadnow_mech$prediction$prediction,
         evals = enbpi$evals,
         enbpi = enbpi$enbpi,
         params = params

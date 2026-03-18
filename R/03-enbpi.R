@@ -32,7 +32,7 @@ enbpi <- function(X_train, y_train, model, formula, params, k, batches = 40, tra
     y_test_k <- y_train[(train_indices[i] + train_window + 1):(train_indices[i] + k + train_window)]
 
     # Fit the model
-    preds[[i]] <- dispatch_model(model)(X_train = X_train_k, Y_train = y_train_k, X_nowcast = X_test_k, params = params)$prediction
+    preds[[i]] <- dispatch_model(model)(X_train = X_train_k, Y_train = y_train_k, X_nowcast = X_test_k, params = params)$prediction$prediction
     
     rmse[i] <- sqrt(mean((y_test_k - preds[[i]])^2))
     mae[i] <- mean(abs(y_test_k - preds[[i]]))

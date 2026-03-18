@@ -62,7 +62,7 @@ fit_KalmanFilter <- function(Y_train, X_train = NULL, X_nowcast = NULL,
                                                   data = data), 
                           H = fitMod$H)
   
-  prediction <- data.frame(predict(fitMod, newdata = newMod))
+  prediction <- data.frame(prediction = predict(fitMod, newdata = newMod))
   
   fits <- predict(fitMod, newdata = oldMod)
   
