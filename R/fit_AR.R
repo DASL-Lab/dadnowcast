@@ -7,7 +7,6 @@
 #' @param n.ahead Integer indicating the number of predictions to be make
 #'
 #' @returns Linear model object and predictions
-#' @export
 
 fit_AR <- function(Y_train, X_train = NULL, X_nowcast = NULL, params = list(p = 1, d = 0, q = 0, n.ahead = 1)) {
   if (!"n.ahead" %in% names(params)) {

@@ -7,7 +7,6 @@
 #' @param CovMatrix Covariance matrix or array of disturbance terms $\epsilon_t$ of observation equation
 #'
 #' @returns Kalman Filter model object and predictions
-#' @export
 
 fit_KalmanFilter <- function(Y_train, X_train = NULL, X_nowcast = NULL,
                              params = list(degree = 1)) {

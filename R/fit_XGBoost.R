@@ -6,7 +6,6 @@
 #' @param params A named list containing options for the parameters used by `xgboost::xgb.train`
 #'
 #' @returns XGBoost object and predictions
-#' @export
 
 fit_XGBoost <- function(Y_train, X_train = NULL, X_nowcast = NULL,
                    params = list(nrounds = 100, verbose = 1,

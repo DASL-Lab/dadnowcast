@@ -5,7 +5,6 @@
 #' @param X_Nowcast Data to make predictions bases on
 #'
 #' @returns Linear model object and predictions
-#' @export
 
 fit_LM <- function(Y_train, X_train, X_nowcast, params = NULL) {
   full_data <- as.data.frame(cbind(Y_train, X_train))

@@ -48,7 +48,6 @@ fit_simple_model <- function(
 #'
 #' @return The specified model based on the given formula
 #'
-#' @export
 #'
 #' @examples
 #' y <- rnorm(100)

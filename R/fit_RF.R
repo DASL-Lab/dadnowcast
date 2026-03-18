@@ -10,7 +10,6 @@
 #' @param maxnodes Maximum number of terminal nodes trees in the forest can have.
 #'
 #' @returns Random Forest object and predictions
-#' @export
 
 fit_RF <- function(Y_train, X_train = NULL, X_nowcast = NULL,
                    params = list(ntree = 500, mtry = NULL, weights = NULL, replace = TRUE, maxnodes = NULL, nodesize = 5)) {

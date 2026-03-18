@@ -92,7 +92,6 @@ optim_negbinom <- function(Dt, Rt, Ct, Pt, sc = 0.2, sp = 0.3) {
 #' }
 #' d2 <- sim_poisson_data(eta = 5, Rt = rpois(100, 100))
 #' fit_mechanistic(Y_train = d2$Dt, X_train = d2["Ct", "Pt", "Rt"], X_nowcast = rpois(10, 100), params = list(method = "poisson"))
-#' @export
 fit_mechanistic <- function(
   Y_train, X_train = NULL, X_nowcast = NULL,
   params = list(sc = 0.2, sp = 0.3, method = "normal")

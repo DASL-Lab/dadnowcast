@@ -8,7 +8,6 @@
 #' @param bs Basis smoothing function, as used in `mgcv::gam()`. Default `tp`.
 #'
 #' @returns GAM model object and predictions
-#' @export
 
 fit_GAM <- function(
   Y_train, X_train = NULL, X_nowcast = NULL,
