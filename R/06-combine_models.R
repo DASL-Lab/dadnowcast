@@ -17,7 +17,6 @@ combine_dadnow <- function(dadnow1, dadnow2) {
     )
     names(return_value$models) <- c(dadnow1$model_id, dadnow2$model_id)
     class(return_value) <- "multidadnow"
-    return(return_value)
   } else if (inherits(dadnow1, "multidadnow") && inherits(dadnow2, "dadnow")) {
     models <- c(dadnow1$models, list(dadnow2))
     names(models)[length(models)] <- dadnow2$model_id
@@ -27,7 +26,6 @@ combine_dadnow <- function(dadnow1, dadnow2) {
       models = models
     )
     class(return_value) <- "multidadnow"
-    return(return_value)
   } else if (inherits(dadnow1, "dadnow") && inherits(dadnow2, "multidadnow")) {
     models <- c(list(dadnow1), dadnow2$models)
     names(models)[1] <- dadnow1$model_id
@@ -37,7 +35,6 @@ combine_dadnow <- function(dadnow1, dadnow2) {
       models = models
     )
     class(return_value) <- "multidadnow"
-    return(return_value)
   } else if (inherits(dadnow1, "multidadnow") && inherits(dadnow2, "multidadnow")) {
     models <- c(dadnow1$models, dadnow2$models)
     names(models) <- c(names(dadnow1$models), names(dadnow2$models))
@@ -47,8 +44,13 @@ combine_dadnow <- function(dadnow1, dadnow2) {
       models = models
     )
     class(return_value) <- "multidadnow"
-    return(return_value)
   } else {
     stop("Both inputs must be of class 'dadnow' or 'multidadnow'.")
   }
+
+  new_model_ids <- make_new_model_ids(return_value)
+  
+  return(return_value)
 }
+
+

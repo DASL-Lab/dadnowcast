@@ -33,6 +33,7 @@ add_model.dadnow <- function(dadnow, formula = NULL, model, params = NULL) {
   prepped_data <- prep_data(
     formula = formula, data = model_data, model = model, date_col = dadnow$date_col, cross_val_indices = dadnow$cross_val_indices
   )
+  model_id <- make_model_id(model, formula, dadnow$models)
 
   new_eval <- cross_val_error(
     X_train = prepped_data$X_train, y_train = prepped_data$y_train, folds = prepped_data$cross_val_indices,
@@ -58,7 +59,7 @@ add_model.dadnow <- function(dadnow, formula = NULL, model, params = NULL) {
   )
 
   dadnow_two <- list(
-    model_id = make_model_id(model, params),
+    model_id = model_id,
     formula = formula,
     date_col = dadnow$date_col,
     prepped_data = prepped_data,
@@ -94,6 +95,8 @@ add_model.multidadnow <- function(multidadnow, formula = NULL, model, params = N
     formula <- multidadnow$models[[1]]$formula
     message(paste0("Using formula from first registered model: ", deparse(formula), "\n"))
   }
+
+  model_id <- make_model_id(model, formula, multidadnow$models)
   
   prepped_data <- prep_data(
     formula, model_data, model, date_col = multidadnow$date_col,
@@ -132,7 +135,7 @@ add_model.multidadnow <- function(multidadnow, formula = NULL, model, params = N
   multidadnow$data <- aug_data
   
   multidadnow$models[[length(multidadnow$models) + 1]] <- list(
-    model_id = make_model_id(model, params),
+    model_id = model_id,
     formula = formula,
     date_col = multidadnow$date_col,
     prepped_data = prepped_data,
@@ -141,7 +144,9 @@ add_model.multidadnow <- function(multidadnow, formula = NULL, model, params = N
     evals = enbpi$evals,
     params = params
   )
-  names(multidadnow$models)[length(multidadnow$models)] <- make_model_id(model, params)
+  names(multidadnow$models)[length(multidadnow$models)] <- make_model_id(
+    model, formula, multidadnow$models[1:(length(multidadnow$models) - 1)]
+  )
 
   multidadnow
 }
