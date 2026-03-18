@@ -47,7 +47,7 @@ print.multidadnow <- function(dadnow) {
 
   cat("\nTest set evaluation metrics:\n")
   all_evals <- do.call(rbind, lapply(dadnow$models, function(x) x$evals))
-  rownames(all_evals) <- NULL
+  #rownames(all_evals) <- NULL
   print(all_evals[order(all_evals$rmse), ])
   if (any(dadnow$models[[1]]$prepped_data$y_test == 0)) {
     cat("Note: There are zeros in the test set, which affects the mean relative error.\n")
