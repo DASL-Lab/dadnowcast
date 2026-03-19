@@ -139,3 +139,41 @@ parse_lag_formula <- function(formula, data) {
   # Return as a data frame/matrix
   as.data.frame(model_cols)
 }
+
+#' Prepare data for a particular formula, for use in predict(dadnow$models$model, newdata = X_train)
+#' 
+#' This function prepares data in the same way as is done for the `nowcast()` function, but for use in `predict(dadnow$models$model, newdata = X_train)`. In particular, it ensures that the data is sorted by date, and that missing values are imputed, then parses the formula to create a model matrix (including lag terms).
+#' 
+#' @param formula A formula object.
+#' @param data A data frame.
+#' @param date_col Name of the column containing date information. If NULL, the date information attempted to be inferred. If there's a single datetime column then it is used. If the data are a ts or mts or zoo object, the dates are esxtracted.
+#' @param interpolate Whether to interpolate missing values. Defaults to TRUE.
+#' 
+#' @returns Data suitable for use in predict(dadnow$models$model, newdata = newdata)
+#' @export
+prep_newdata <- function(
+  formula, data, date_col = NULL, interpolate = TRUE
+) {
+  # Ensures data has a valid date column and that it's sorted by date
+  data <- as.data.frame(data) |> 
+    parse_dates(date_col = date_col, quiet = TRUE) |>
+    dplyr::arrange(date)
+
+  diffs <- diff(data[, date_col])
+  diffs <- diffs[!is.na(diffs)]
+
+  # Training and nowcasting data
+  covariates <- all.vars(formula)[-1]
+  stopifnot(all(covariates %in% colnames(data)))
+
+  # interpolate missing values
+  if (interpolate) {
+    for (covariate in covariates) {
+      data[[covariate]] <- impute_linear(dates = data[, date_col], x = data[[covariate]])
+    }
+  }
+
+  model_matrix <- parse_lag_formula(formula, data)
+
+  model_matrix
+}
