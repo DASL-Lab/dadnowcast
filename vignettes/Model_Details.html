@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Model_Details</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Model_Details</h1>
+
+
+
+<p>This vignette details the specific models used in this package, along
+with their parameters of interest, along with some of the relevant
+theory behind them.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(fatherStay)</span></code></pre></div>
+<p>In this package the assumed structure of the data is that there will
+be a response variable DAD (<span class="math inline">\(y_t\)</span>)
+occurring over time <span class="math inline">\(t\)</span>, and several
+explanatory variables RVDSS (<span class="math inline">\(x_t\)</span>),
+PTSOS (<span class="math inline">\(z_{1,t}\)</span>), and CNISP (<span class="math inline">\(z_{2,t}\)</span>). <span class="math inline">\(z_1\)</span>, and <span class="math inline">\(z_2\)</span> are assumed to be from the same data
+generating process and thus at least somewhat correlated, while <span class="math inline">\(x\)</span> is assumed to come from a different
+data generating process.</p>
+<div id="linear-model" class="section level1">
+<h1>Linear Model</h1>
+<p>The first and simplest models that we will be looking at in this
+project are linear models where the value of DAD we are nowcasting is
+dependent on the current values of the explanatory variables: <span class="math display">\[
+y_t = \alpha_0 x_t + \beta_1 z_{t,1} + \beta_2 z_{t,2} + \epsilon_t
+\]</span></p>
+<p>We can build on this basic model by adding the complexity of lagging
+the values of the explanatory variables: <span class="math display">\[
+y_t = \alpha_0 x_t + \alpha_1 x_{t-1} + \beta_1 z_{t,1} + \beta_2
+z_{t,2} + \epsilon_t
+\]</span></p>
+<p>The usage of these models in the package is very simple. The function
+<code>fit_LM</code> fits a linear model with given parameters, there are
+options for <code>Y_train</code>, <code>X_train</code>, and
+<code>X_nowcast</code>, which represent the observed response variable,
+the correlating observed explanatory variables, and the observations of
+the explanatory variables that have no corresponding response variable
+observations. There are no options for any other parameters in this
+model.</p>
+<p>This model is the simplest and easiest to run and interpret, however
+it has the drawbacks of not directly accounting for time or previous
+values of the response variable, and not accounting for non-linear
+patterns.</p>
+</div>
+<div id="ar" class="section level1">
+<h1>AR</h1>
+<p>The function <code>fit_AR</code> fits a basic Auto-Regressive (AR)
+model on the response variable <code>Y_train</code>, and takes a
+parameter <code>n.ahead</code> to indicate how many predictions the
+function should make, as well as a parameter <code>p</code> which
+indicates the degree of the AR model. This function also includes many
+parameter options to fit many more advanced variations of AR models, but
+these are for the convenience of future functions. An AR(p) model
+follows the form:</p>
+<p><span class="math display">\[
+y_t = \sum_{i=0}^p \beta_{t-i} y_{t-i}
+\]</span></p>
+<p>This is a simple AR model, which is only based on time and the
+previous trend of the response variable, it does not take any exogenous
+variables into account when fitting the model and making
+predictions.</p>
+<div id="arx" class="section level2">
+<h2>ARX</h2>
+<p>The first variation is the function <code>fit_ARX</code> which fits
+an AR model with exogenous factors. An ARX model follows the form:</p>
+<p><span class="math display">\[
+y_t = \sum_{i=0}^n \alpha_{t-i} x_{t-i} + \sum_{i=0}^p \gamma_{t-i}
+z_{t-i,1} + \sum_{i=0}^p \gamma_{t-i} z_{t-i,2} + \sum_{j=1}^m
+\beta_{t-i} y_{t-i} + \epsilon_t
+\]</span></p>
+<p>The function <code>fit_ARX</code> takes the arguments
+<code>Y_train</code>, <code>X_train</code>, <code>X_nowcast</code>, and
+a <code>params</code> argument <code>p</code> which indicates the degree
+of the AR model. While it is still possible to use <code>n.ahead</code>
+in <code>fit_ARX</code>, it is unnecessary due to the function
+automatically using the length of <code>X_nowcast</code> as the number
+of predictions to make.</p>
+<p>This model builds on the simple AR model by now taking into account
+the exogenous variables.</p>
+</div>
+<div id="arimax" class="section level2">
+<h2>ARIMAX</h2>
+<p>A natural extension of the AR model is to add the moving average (MA)
+and integration parts (I) to make a function that fits ARIMAX models.
+The function then follows the form:</p>
+<p><span class="math display">\[
+(1 - \sum^p_{i=1}\alpha_iL^{i}) X_t = (1 + \sum^q_{i=1}\theta_iL^{i})
+\]</span></p>
+<p>The function <code>fit_ARIMA</code> takes arguments
+<code>Y_train</code>, <code>X_train</code>, <code>X_nowcast</code>, and
+<code>params</code> arguments: <code>p</code> which indicates the degree
+of the AR portion, <code>d</code> which indicates the degree of
+differencing, and <code>q</code> which indicates the MA degree.</p>
+<p>This model builds on an ARX model by incorporating a moving average
+and differencing in it, these allow for the model to capture more
+complex trends in the data, but increase the risk of overfitting or the
+model identifying trends that are not actually present in the data.</p>
+</div>
+</div>
+<div id="gam" class="section level1">
+<h1>GAM</h1>
+<p>The function <code>fit_GAM</code> fits generalized additive models,
+it takes the general form:</p>
+<p><span class="math display">\[
+y_t = \sum_{i=0}^n \alpha_i b_i(x_{t}) + \sum_{j=0}^m \beta_j
+b_j(z_{t,1}) + \sum_{k=0}^l \gamma_k b_k(z_{t,2}) + \epsilon_t
+\]</span></p>
+<p>Where <span class="math inline">\(b_i(), \ b_j(), \ b_k()\)</span>
+are all basis splines.</p>
+<p>The function <code>fit_GAM</code> fits a GAM function on the given
+data in the form of <code>Y_train</code>, <code>X_train</code>, and
+<code>X_nowcast</code>. There are multiple <code>params</code> options
+to specify parameters for the type of GAM function that is desired;
+<code>family</code> specifies the distribution and link function for the
+model, <code>smooths</code> is a named list indicating which smoothing
+parameters to use on each variable, <code>bs</code> giving the basis
+smoothing function. Each of these parameters are optional and have
+appropriate built in defaults, but the parameters allow for a highly
+customizable function.</p>
+<p>A GAM function is much more flexible than a linear model or an ARIMA
+model, and can capture complex patterns in the data, however it does not
+necessarily take the time bound nature of this data into account without
+modifications (ie using the lag terms). A GAM can also be prone to
+overfitting to the training data.</p>
+</div>
+<div id="random-forest" class="section level1">
+<h1>Random Forest</h1>
+<p>The function <code>fit_RF</code> fits a random forest model on the
+given data using the package <code>randomForest</code>. This function
+uses the same data variables, <code>Y_train</code>,
+<code>X_train</code>, and <code>X_nowcast</code>. There are parameters,
+- <code>ntree</code> which specifies the number of trees to grow the
+default is 500, a higher value leads to a lower bias as each individual
+tree has a lower impact on the final outcome, but at the expense of
+being more computationally intense. - <code>mtry</code> is the number of
+variables used as candidates at each split the default value is the
+square root of the number of explanatory variables used in the model, a
+larger value of mtry makes the trees within the forest more correlated
+with each and when the value of mtry is equal to the number of
+parameters the model is just bagging. - <code>weights</code> for
+weighting the sample data, this is used if the user wishes to emphasize
+parts of the data for example if there is a class imbalance. (REPLACE
+EXAMPLE, WE wont have a class imbalance here I think?, could also use
+when there is bias in the data) - <code>replace</code> specifies if
+sampling should be done with or without replacement the default is TRUE.
+- The final two options are both for limiting the size of the trees
+grown which is not necessary to do manually but is a very nice option to
+have, especially if computing time is a concern. - <code>maxnodes</code>
+which limits the number of terminal nodes that a tree can have which
+defaults to letting the tree grow without restriction. -
+<code>nodesize</code> which sets the minimum size of the terminal nodes
+and defaults to 5.</p>
+<p>A random forest is a very flexible model which is very good at
+finding complex relationships between many variables.</p>
+</div>
+<div id="xgboost" class="section level1">
+<h1>XGBoost</h1>
+<p>The function <code>fit_XGBoost</code> useds the package
+<code>xgboost</code> to create an extreme gradient boosted model. This
+model builds a series of trees sequentially and each subsequent tree
+learns from the trees before it. This model has several parameter
+options: - <code>nrounds</code> this specifies the maximum number of
+boosting iterations. The function <code>fit_xgboost</code> will
+automatically tune this value to the data that it is given if there is
+no default value given. - <code>verbose</code> specifies if information
+about the model will be printed out when creating it, 0 makes it silent,
+the default is 1. - XGBparams is a list of more parameters used in the
+model, the most important of which is <code>max_depth</code> which sets
+the depth of the trees used in the model.</p>
+</div>
+<div id="kalman-filter" class="section level1">
+<h1>Kalman Filter</h1>
+<p>The function <code>fit_KalmanFilter</code> uses the package
+<code>KFAS</code> to create a Kalman-Filter on the given data. A Kalman
+Filter works by creating a prediction and then updating it with real
+data when the real data is received. The combination of the prediction
+and real data is then used to create another prediction step.
+<code>fit_KalmanFilter</code> only has a parameter option for
+<code>degree</code> which specifies the trend component of the model,
+the default is 1 which is for local level, 2 makes it a local linear
+trend.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

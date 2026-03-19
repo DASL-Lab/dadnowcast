@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Example Usage</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Example Usage</h1>
+
+
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">load_all</span>()</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="co">#&gt; ℹ Loading fatherStay</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code></pre></div>
+<p>This vignette is currently my testing grounds, and ensure that basic
+functionality works whenever I make a change to the backend.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">simulate_mechanistic</span>()</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">tail</span>(df, <span class="dv">12</span>) <span class="co"># last 10 are NA - to be nowcast!</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#&gt;           date  dad cnisp ptsos     npos</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co">#&gt; 94  2021-10-13 5066  1615  3292 40507.28</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co">#&gt; 95  2021-10-20 6306  1993  3528 40374.49</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#&gt; 96  2021-10-27   NA  1431  3283 40808.57</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt; 97  2021-11-03   NA  1839  1444 29963.96</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#&gt; 98  2021-11-10   NA  1010   941 35532.14</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt; 99  2021-11-17   NA  1768  2316 32834.67</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#&gt; 100 2021-11-24   NA  2239  3351 40549.47</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co">#&gt; 101 2021-12-01   NA  2246  3519 38640.00</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="co">#&gt; 102 2021-12-08   NA  2448  1956 47232.38</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co">#&gt; 103 2021-12-15   NA  2779  1485 49632.10</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co">#&gt; 104 2021-12-22   NA  1787  3169 49134.65</span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co">#&gt; 105 2021-12-29   NA  2143  3409 44768.94</span></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="fu">pairs</span>(df[, <span class="sc">-</span><span class="dv">1</span>])</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+<p>The basic usage of the package involves the “nowcast” function, which
+fits a single nowcasting model to the data. The formula interface is
+used to specify the response variable and covariates, and lags can be
+specified using the “lag” function. The function converts the data into
+a standard format across all models so that a single “dadnow” object can
+be used to store the results of multiple models, and the same plotting
+and evaluation functions can be used regardless of the underlying
+model.</p>
+<p>There’s also an <code>autoplot()</code> method for “dadnow” objects,
+which plots the nowcast against the observed data. By default, it plots
+all training data in the “dadnow” object, but the <code>last_n</code>
+argument can be used to specify how many of the most recent observations
+to plot.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>dadnow2 <span class="ot">&lt;-</span> <span class="fu">nowcast</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="at">formula =</span> dad <span class="sc">~</span> <span class="fu">lag</span>(cnisp, <span class="dv">3</span>) <span class="sc">+</span> <span class="fu">lag</span>(ptsos, <span class="dv">3</span>),</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="at">data =</span> df, </span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="at">model =</span> <span class="st">&quot;ar&quot;</span>, </span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="at">date_col =</span> <span class="st">&quot;date&quot;</span>, </span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="at">params =</span> <span class="fu">list</span>(<span class="at">order =</span> <span class="dv">1</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>)</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>dadnow2 <span class="ot">&lt;-</span> <span class="fu">add_model</span>(dadnow2, <span class="at">model =</span> <span class="st">&quot;ar&quot;</span>, <span class="at">params =</span> <span class="fu">list</span>(<span class="at">order =</span> <span class="dv">2</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>  <span class="fu">add_model</span>(<span class="at">model =</span> <span class="st">&quot;lm&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>  <span class="fu">add_model</span>(<span class="at">model =</span> <span class="st">&quot;arx&quot;</span>, <span class="at">params =</span> <span class="fu">list</span>(<span class="at">order =</span> <span class="dv">1</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>  <span class="fu">add_model</span>(<span class="at">model =</span> <span class="st">&quot;gam&quot;</span>, <span class="at">params =</span> <span class="fu">list</span>(<span class="at">smooths =</span> <span class="fu">list</span>(<span class="st">&quot;cnisp_lag0&quot;</span><span class="ot">=</span><span class="dv">10</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>  <span class="fu">add_model</span>(<span class="at">model =</span> <span class="st">&quot;rf&quot;</span>, <span class="at">formula =</span> dad <span class="sc">~</span> <span class="fu">lag</span>(cnisp, <span class="dv">2</span>), <span class="at">params =</span> <span class="fu">list</span>(<span class="at">ntree =</span> <span class="dv">100</span>, <span class="at">mtry =</span> <span class="dv">3</span>))</span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#&gt; Using formula from first registered model: dad ~ lag(cnisp, 3) + lag(ptsos, 3)</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt; Using formula from first registered model: dad ~ lag(cnisp, 3) + lag(ptsos, 3)</span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="co">#&gt; Using formula from first registered model: dad ~ lag(cnisp, 3) + lag(ptsos, 3)</span></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co">#&gt; Using formula from first registered model: dad ~ lag(cnisp, 3) + lag(ptsos, 3)</span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>dadnow2 <span class="ot">&lt;-</span> <span class="fu">add_model</span>(dadnow2, <span class="at">model =</span> <span class="st">&quot;xgboost&quot;</span>, <span class="at">params =</span> <span class="fu">list</span>(<span class="at">nrounds =</span> <span class="dv">20</span>))</span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="co">#&gt; Using formula from first registered model: dad ~ lag(cnisp, 3) + lag(ptsos, 3)</span></span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a>dadnow2</span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a><span class="co">#&gt; Date column: date </span></span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a><span class="co">#&gt; Training date range: 2020-01-01 to 2021-12-29 </span></span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a><span class="co">#&gt; Test set evaluation metrics:</span></span>
+<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a><span class="co">#&gt;                                        formula   model</span></span>
+<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a><span class="co">#&gt; f1_ar1     dad ~ lag(cnisp, 3) + lag(ptsos, 3)     ar1</span></span>
+<span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a><span class="co">#&gt; f1_ar2     dad ~ lag(cnisp, 3) + lag(ptsos, 3)     ar2</span></span>
+<span id="cb3-31"><a href="#cb3-31" tabindex="-1"></a><span class="co">#&gt; f1_arx1    dad ~ lag(cnisp, 3) + lag(ptsos, 3)    arx1</span></span>
+<span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a><span class="co">#&gt; f1_gam     dad ~ lag(cnisp, 3) + lag(ptsos, 3)     gam</span></span>
+<span id="cb3-33"><a href="#cb3-33" tabindex="-1"></a><span class="co">#&gt; f1_lm      dad ~ lag(cnisp, 3) + lag(ptsos, 3)      lm</span></span>
+<span id="cb3-34"><a href="#cb3-34" tabindex="-1"></a><span class="co">#&gt; f2_rf                      dad ~ lag(cnisp, 2)      rf</span></span>
+<span id="cb3-35"><a href="#cb3-35" tabindex="-1"></a><span class="co">#&gt; f1_xgboost dad ~ lag(cnisp, 3) + lag(ptsos, 3) xgboost</span></span>
+<span id="cb3-36"><a href="#cb3-36" tabindex="-1"></a><span class="co">#&gt;                                  params     rmse      mae       mre</span></span>
+<span id="cb3-37"><a href="#cb3-37" tabindex="-1"></a><span class="co">#&gt; f1_ar1                           order1 2704.319 2178.446 0.5451491</span></span>
+<span id="cb3-38"><a href="#cb3-38" tabindex="-1"></a><span class="co">#&gt; f1_ar2                           order2 2802.077 2229.357 0.5284728</span></span>
+<span id="cb3-39"><a href="#cb3-39" tabindex="-1"></a><span class="co">#&gt; f1_arx1                          order1 2795.527 2228.262 0.7005492</span></span>
+<span id="cb3-40"><a href="#cb3-40" tabindex="-1"></a><span class="co">#&gt; f1_gam     smoothslist(cnisp_lag0 = 10) 2741.679 2115.472 0.5936024</span></span>
+<span id="cb3-41"><a href="#cb3-41" tabindex="-1"></a><span class="co">#&gt; f1_lm                                   2617.316 2084.595 0.6206563</span></span>
+<span id="cb3-42"><a href="#cb3-42" tabindex="-1"></a><span class="co">#&gt; f2_rf                    ntree100_mtry3 2639.187 2066.254 0.3966276</span></span>
+<span id="cb3-43"><a href="#cb3-43" tabindex="-1"></a><span class="co">#&gt; f1_xgboost                    nrounds20 2781.004 2224.161 0.8708969</span></span>
+<span id="cb3-44"><a href="#cb3-44" tabindex="-1"></a></span>
+<span id="cb3-45"><a href="#cb3-45" tabindex="-1"></a><span class="fu">autoplot</span>(dadnow2, <span class="at">last_n =</span> <span class="dv">50</span>) <span class="sc">+</span></span>
+<span id="cb3-46"><a href="#cb3-46" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+<p>The package includes a “mechanistic” model, which can be seen in
+<code>vignette(&quot;mechanistic_model&quot;)</code>. The model takes the
+parameters <code>sc</code> and <code>sp</code> and requires a method
+(“normal”, “poisson”, or “negbinom”) to specify the distribution of the
+error term. Because it works slightly differently than the other models,
+it is added to a “dadnow” object using the <code>add_mechanistic</code>
+function, which takes the same formula interface as <code>nowcast</code>
+but with different parameters. The mechanistic model can be added
+alongside the other models, and the same plotting and evaluation
+functions can be used.</p>
+<p>Note that the mechanistic assumption is sensitive to the values of sc
+and sp, and there will often be warnings about lack of convergence in
+the optimization process.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>mech <span class="ot">&lt;-</span> <span class="fu">nowcast_mechanistic</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  dad <span class="sc">~</span> cnisp <span class="sc">+</span> ptsos <span class="sc">+</span> npos, df, <span class="at">date_col =</span> <span class="st">&quot;date&quot;</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">params =</span> <span class="fu">list</span>(<span class="at">sc =</span> <span class="fl">0.2</span>, <span class="at">sp =</span> <span class="fl">0.3</span>, <span class="at">method =</span> <span class="st">&quot;poisson&quot;</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>)</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt; I see the formula &quot;dad ~ cnisp + ptsos + npos&quot;</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt; Assuming that &quot;dad&quot; contains DAD data, &quot;cnisp&quot; is CNISP, &quot;ptsos&quot; is PTSOS, and &quot;npos&quot; is RVDSS.</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>mech</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#&gt; Date column: date </span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt; Training date range: 2020-01-01 to 2021-12-29 </span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt; Test set evaluation metrics:</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt;                      formula        model                    params     rmse</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; 1 dad ~ cnisp + ptsos + npos mech_poisson sc0.2_sp0.3_methodpoisson 3378.767</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt;        mae       mre</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co">#&gt; 1 2559.278 0.2492081</span></span></code></pre></div>
+<p>In addition to <code>add_model()</code> and
+<code>add_mechanistic()</code>, which adds a single model to a “dadnow”
+object, there is also a <code>combine_dadnow</code> function, which
+combines two “dadnow” objects.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>dadnow3 <span class="ot">&lt;-</span> <span class="fu">combine_dadnow</span>(dadnow2, mech) <span class="sc">|&gt;</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="fu">add_mechanistic</span>(<span class="at">formula =</span> dad <span class="sc">~</span> cnisp <span class="sc">+</span> ptsos <span class="sc">+</span> npos, <span class="at">params =</span> <span class="fu">list</span>(<span class="at">sc =</span> <span class="fl">0.2</span>, <span class="at">sp =</span> <span class="fl">0.3</span>, <span class="at">method =</span> <span class="st">&quot;normal&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="fu">add_mechanistic</span>(<span class="at">formula =</span> dad <span class="sc">~</span> cnisp <span class="sc">+</span> ptsos <span class="sc">+</span> npos, <span class="at">params =</span> <span class="fu">list</span>(<span class="at">sc =</span> <span class="fl">0.2</span>, <span class="at">sp =</span> <span class="fl">0.3</span>, <span class="at">method =</span> <span class="st">&quot;poisson&quot;</span>))</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co">#&gt; I see the formula &quot;dad ~ cnisp + ptsos + npos&quot;</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co">#&gt; Assuming that &quot;dad&quot; contains DAD data, &quot;cnisp&quot; is CNISP, &quot;ptsos&quot; is PTSOS, and &quot;npos&quot; is RVDSS.</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co">#&gt; I see the formula &quot;dad ~ cnisp + ptsos + npos&quot;</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co">#&gt; Assuming that &quot;dad&quot; contains DAD data, &quot;cnisp&quot; is CNISP, &quot;ptsos&quot; is PTSOS, and &quot;npos&quot; is RVDSS.</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>dadnow3</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="co">#&gt; Date column: date </span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="co">#&gt; Training date range: 2020-01-01 to 2021-12-29 </span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="co">#&gt; Test set evaluation metrics:</span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="co">#&gt;                                              formula        model</span></span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a><span class="co">#&gt; f1_ar1           dad ~ lag(cnisp, 3) + lag(ptsos, 3)          ar1</span></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a><span class="co">#&gt; f1_ar2           dad ~ lag(cnisp, 3) + lag(ptsos, 3)          ar2</span></span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a><span class="co">#&gt; f1_arx1          dad ~ lag(cnisp, 3) + lag(ptsos, 3)         arx1</span></span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a><span class="co">#&gt; f1_gam           dad ~ lag(cnisp, 3) + lag(ptsos, 3)          gam</span></span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a><span class="co">#&gt; f1_lm            dad ~ lag(cnisp, 3) + lag(ptsos, 3)           lm</span></span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a><span class="co">#&gt; f2_rf                            dad ~ lag(cnisp, 2)           rf</span></span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a><span class="co">#&gt; f1_xgboost       dad ~ lag(cnisp, 3) + lag(ptsos, 3)      xgboost</span></span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a><span class="co">#&gt; f3_mech_poisson           dad ~ cnisp + ptsos + npos mech_poisson</span></span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a><span class="co">#&gt; f3_mech_normal            dad ~ cnisp + ptsos + npos  mech_normal</span></span>
+<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a><span class="co">#&gt; f3_mech_poissonb          dad ~ cnisp + ptsos + npos mech_poisson</span></span>
+<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a><span class="co">#&gt;                                        params     rmse      mae       mre</span></span>
+<span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a><span class="co">#&gt; f1_ar1                                 order1 2704.319 2178.446 0.5451491</span></span>
+<span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a><span class="co">#&gt; f1_ar2                                 order2 2802.077 2229.357 0.5284728</span></span>
+<span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a><span class="co">#&gt; f1_arx1                                order1 2795.527 2228.262 0.7005492</span></span>
+<span id="cb5-30"><a href="#cb5-30" tabindex="-1"></a><span class="co">#&gt; f1_gam           smoothslist(cnisp_lag0 = 10) 2741.679 2115.472 0.5936024</span></span>
+<span id="cb5-31"><a href="#cb5-31" tabindex="-1"></a><span class="co">#&gt; f1_lm                                         2617.316 2084.595 0.6206563</span></span>
+<span id="cb5-32"><a href="#cb5-32" tabindex="-1"></a><span class="co">#&gt; f2_rf                          ntree100_mtry3 2639.187 2066.254 0.3966276</span></span>
+<span id="cb5-33"><a href="#cb5-33" tabindex="-1"></a><span class="co">#&gt; f1_xgboost                          nrounds20 2781.004 2224.161 0.8708969</span></span>
+<span id="cb5-34"><a href="#cb5-34" tabindex="-1"></a><span class="co">#&gt; f3_mech_poisson     sc0.2_sp0.3_methodpoisson 3378.767 2559.278 0.2492081</span></span>
+<span id="cb5-35"><a href="#cb5-35" tabindex="-1"></a><span class="co">#&gt; f3_mech_normal       sc0.2_sp0.3_methodnormal 2290.248 1824.808 0.3387574</span></span>
+<span id="cb5-36"><a href="#cb5-36" tabindex="-1"></a><span class="co">#&gt; f3_mech_poissonb    sc0.2_sp0.3_methodpoisson 3475.197 2700.646 0.2516383</span></span>
+<span id="cb5-37"><a href="#cb5-37" tabindex="-1"></a><span class="fu">autoplot</span>(dadnow3, <span class="at">last_n =</span> <span class="dv">5</span>)</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+<p>The <code>add_model()</code> interface allows for new formulas to be
+specified when adding new models.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>dadnow4 <span class="ot">&lt;-</span> <span class="fu">add_model</span>(dadnow3, <span class="at">formula =</span> dad <span class="sc">~</span> <span class="fu">lag</span>(npos, <span class="dv">5</span>) <span class="sc">+</span> <span class="fu">lag</span>(cnisp, <span class="dv">5</span>) <span class="sc">+</span> <span class="fu">lag</span>(ptsos, <span class="dv">5</span>), <span class="at">model =</span> <span class="st">&quot;xgboost&quot;</span>, <span class="at">params =</span> <span class="fu">list</span>(<span class="at">nrounds =</span> <span class="dv">50</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="fu">add_model</span>(<span class="at">formula =</span> dad <span class="sc">~</span> <span class="fu">lag</span>(npos, <span class="dv">5</span>) <span class="sc">+</span> <span class="fu">lag</span>(cnisp, <span class="dv">5</span>) <span class="sc">+</span> <span class="fu">lag</span>(ptsos, <span class="dv">5</span>), <span class="at">model =</span> <span class="st">&quot;lm&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="fu">add_model</span>(<span class="at">formula =</span> dad <span class="sc">~</span> <span class="fu">lag</span>(npos, <span class="dv">5</span>) <span class="sc">+</span> <span class="fu">lag</span>(cnisp, <span class="dv">5</span>) <span class="sc">+</span> <span class="fu">lag</span>(ptsos, <span class="dv">5</span>), <span class="at">model =</span> <span class="st">&quot;ar&quot;</span>, <span class="at">params =</span> <span class="fu">list</span>(<span class="at">order =</span> <span class="dv">1</span>))</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>dadnow4</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt; Date column: date </span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt; Training date range: 2020-01-01 to 2021-12-29 </span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#&gt; Test set evaluation metrics:</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co">#&gt;                                                             formula</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt; f1_ar1                          dad ~ lag(cnisp, 3) + lag(ptsos, 3)</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co">#&gt; f4_ar1           dad ~ lag(npos, 5) + lag(cnisp, 5) + lag(ptsos, 5)</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="co">#&gt; f1_ar2                          dad ~ lag(cnisp, 3) + lag(ptsos, 3)</span></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co">#&gt; f1_arx1                         dad ~ lag(cnisp, 3) + lag(ptsos, 3)</span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co">#&gt; f1_gam                          dad ~ lag(cnisp, 3) + lag(ptsos, 3)</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="co">#&gt; f1_lm                           dad ~ lag(cnisp, 3) + lag(ptsos, 3)</span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="co">#&gt; f4_lm            dad ~ lag(npos, 5) + lag(cnisp, 5) + lag(ptsos, 5)</span></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a><span class="co">#&gt; f3_mech_normal                           dad ~ cnisp + ptsos + npos</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="co">#&gt; f3_mech_poisson                          dad ~ cnisp + ptsos + npos</span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a><span class="co">#&gt; f3_mech_poissonb                         dad ~ cnisp + ptsos + npos</span></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a><span class="co">#&gt; f2_rf                                           dad ~ lag(cnisp, 2)</span></span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a><span class="co">#&gt; f1_xgboost                      dad ~ lag(cnisp, 3) + lag(ptsos, 3)</span></span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a><span class="co">#&gt; f4_xgboost       dad ~ lag(npos, 5) + lag(cnisp, 5) + lag(ptsos, 5)</span></span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a><span class="co">#&gt;                         model                       params     rmse      mae</span></span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a><span class="co">#&gt; f1_ar1                    ar1                       order1 2704.319 2178.446</span></span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a><span class="co">#&gt; f4_ar1                    ar1                       order1 3085.766 2412.144</span></span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a><span class="co">#&gt; f1_ar2                    ar2                       order2 2802.077 2229.357</span></span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a><span class="co">#&gt; f1_arx1                  arx1                       order1 2795.527 2228.262</span></span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a><span class="co">#&gt; f1_gam                    gam smoothslist(cnisp_lag0 = 10) 2741.679 2115.472</span></span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a><span class="co">#&gt; f1_lm                      lm                              2617.316 2084.595</span></span>
+<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a><span class="co">#&gt; f4_lm                      lm                              2885.807 2237.964</span></span>
+<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a><span class="co">#&gt; f3_mech_normal    mech_normal     sc0.2_sp0.3_methodnormal 2290.248 1824.808</span></span>
+<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a><span class="co">#&gt; f3_mech_poisson  mech_poisson    sc0.2_sp0.3_methodpoisson 3378.767 2559.278</span></span>
+<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a><span class="co">#&gt; f3_mech_poissonb mech_poisson    sc0.2_sp0.3_methodpoisson 3475.197 2700.646</span></span>
+<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a><span class="co">#&gt; f2_rf                      rf               ntree100_mtry3 2639.187 2066.254</span></span>
+<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a><span class="co">#&gt; f1_xgboost            xgboost                    nrounds20 2781.004 2224.161</span></span>
+<span id="cb6-37"><a href="#cb6-37" tabindex="-1"></a><span class="co">#&gt; f4_xgboost            xgboost                    nrounds50 3056.544 2377.474</span></span>
+<span id="cb6-38"><a href="#cb6-38" tabindex="-1"></a><span class="co">#&gt;                        mre</span></span>
+<span id="cb6-39"><a href="#cb6-39" tabindex="-1"></a><span class="co">#&gt; f1_ar1           0.5451491</span></span>
+<span id="cb6-40"><a href="#cb6-40" tabindex="-1"></a><span class="co">#&gt; f4_ar1           0.6626981</span></span>
+<span id="cb6-41"><a href="#cb6-41" tabindex="-1"></a><span class="co">#&gt; f1_ar2           0.5284728</span></span>
+<span id="cb6-42"><a href="#cb6-42" tabindex="-1"></a><span class="co">#&gt; f1_arx1          0.7005492</span></span>
+<span id="cb6-43"><a href="#cb6-43" tabindex="-1"></a><span class="co">#&gt; f1_gam           0.5936024</span></span>
+<span id="cb6-44"><a href="#cb6-44" tabindex="-1"></a><span class="co">#&gt; f1_lm            0.6206563</span></span>
+<span id="cb6-45"><a href="#cb6-45" tabindex="-1"></a><span class="co">#&gt; f4_lm            0.6781498</span></span>
+<span id="cb6-46"><a href="#cb6-46" tabindex="-1"></a><span class="co">#&gt; f3_mech_normal   0.3387574</span></span>
+<span id="cb6-47"><a href="#cb6-47" tabindex="-1"></a><span class="co">#&gt; f3_mech_poisson  0.2492081</span></span>
+<span id="cb6-48"><a href="#cb6-48" tabindex="-1"></a><span class="co">#&gt; f3_mech_poissonb 0.2516383</span></span>
+<span id="cb6-49"><a href="#cb6-49" tabindex="-1"></a><span class="co">#&gt; f2_rf            0.3966276</span></span>
+<span id="cb6-50"><a href="#cb6-50" tabindex="-1"></a><span class="co">#&gt; f1_xgboost       0.8708969</span></span>
+<span id="cb6-51"><a href="#cb6-51" tabindex="-1"></a><span class="co">#&gt; f4_xgboost       0.8297565</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>gg_ptsos <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> ptsos)) <span class="sc">+</span> <span class="fu">geom_line</span>()</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>gg_cnisp <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> cnisp)) <span class="sc">+</span> <span class="fu">geom_line</span>()</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>gg_dadnow <span class="ot">&lt;-</span> <span class="fu">autoplot</span>(dadnow2, <span class="at">last_n =</span> <span class="dv">150</span>) <span class="sc">+</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>gg_dadnow <span class="sc">/</span> gg_ptsos <span class="sc">/</span> gg_cnisp</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+<div id="work-in-progress" class="section level1">
+<h1>Work in Progress</h1>
+<ul>
+<li><p><del>Prediction intervals</del></p>
+<ul>
+<li>Plot the prediction intervals well (esp with many models)</li>
+<li>Take prediction intervals from model output where possible?</li>
+<li>Expose options to user (e.g., how many models to use for prediction
+intervals, prediction interval level, etc.)</li>
+</ul></li>
+<li><p>Built-in plots for nowcast against covariates</p>
+<ul>
+<li>One covariate at a time</li>
+<li>Two covariates (heatmap-like)?</li>
+</ul></li>
+<li><p><del>Multiple formulae in one <code>dadnow</code> object</del>
+Completed!</p></li>
+<li><p><del>Mechanistic model</del> Completed!</p>
+<ul>
+<li>Make the intercept term optional (poor performance without intercept
+on my test data due to many zeros, may not be true in practice).</li>
+</ul></li>
+</ul>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

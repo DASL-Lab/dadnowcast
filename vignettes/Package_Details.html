@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Devan Becker and Timothy Marsh" />
+
+
+<title>An R Package for Nowcasting DAD Data</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+
+
+
+<style type="text/css">
+
+div.csl-bib-body { }
+div.csl-entry {
+clear: both;
+margin-bottom: 0em;
+}
+.hanging div.csl-entry {
+margin-left:2em;
+text-indent:-2em;
+}
+div.csl-left-margin {
+min-width:2em;
+float:left;
+}
+div.csl-right-inline {
+margin-left:2em;
+padding-left:1em;
+}
+div.csl-indent {
+margin-left: 2em;
+}
+</style>
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">An R Package for Nowcasting DAD Data</h1>
+<h4 class="author">Devan Becker and Timothy Marsh</h4>
+
+
+
+<div id="objective" class="section level2">
+<h2>Objective</h2>
+<p>This package is designed to perform nowcasting on a particular set of
+data. The inputs are defined by the intended user of this package, the
+interface will be user-friendly for intermediate R programmers, and the
+outputs will provide useful insights into the performance of the
+nowcasting model.</p>
+<p>This package expects the data to look something like the
+following:</p>
+<table>
+<thead>
+<tr class="header">
+<th>date</th>
+<th><span class="math inline">\(y\)</span></th>
+<th><span class="math inline">\(x_1\)</span></th>
+<th><span class="math inline">\(z_1\)</span></th>
+<th><span class="math inline">\(z_2\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>2020-01-01</td>
+<td>1.1</td>
+<td>0.5</td>
+<td>2.3</td>
+<td>1.2</td>
+</tr>
+<tr class="even">
+<td>2020-01-02</td>
+<td>1.5</td>
+<td>0.2</td>
+<td>2.7</td>
+<td>1.2</td>
+</tr>
+<tr class="odd">
+<td>2020-01-03</td>
+<td>NA</td>
+<td>0.1</td>
+<td>2.8</td>
+<td>1.5</td>
+</tr>
+<tr class="even">
+<td>2020-01-04</td>
+<td>1.5</td>
+<td>NA</td>
+<td>2.7</td>
+<td>1.3</td>
+</tr>
+<tr class="odd">
+<td>2020-01-05</td>
+<td>1.8</td>
+<td>0.2</td>
+<td>2.9</td>
+<td>1.2</td>
+</tr>
+<tr class="even">
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+</tr>
+<tr class="odd">
+<td>2020-12-26</td>
+<td>2.5</td>
+<td>1.2</td>
+<td>1.7</td>
+<td>2.2</td>
+</tr>
+<tr class="even">
+<td>2020-12-27</td>
+<td>2.9</td>
+<td>0.8</td>
+<td>0.7</td>
+<td>2.5</td>
+</tr>
+<tr class="odd">
+<td>2020-12-28</td>
+<td>NA</td>
+<td>0.2</td>
+<td>2.7</td>
+<td>2.9</td>
+</tr>
+<tr class="even">
+<td>2020-12-29</td>
+<td>NA</td>
+<td>0.6</td>
+<td>2.2</td>
+<td>1.9</td>
+</tr>
+<tr class="odd">
+<td>2020-12-30</td>
+<td>NA</td>
+<td>0.4</td>
+<td>2.0</td>
+<td>3.9</td>
+</tr>
+<tr class="even">
+<td>2020-12-31</td>
+<td>NA</td>
+<td>0.2</td>
+<td>1.0</td>
+<td>3.8</td>
+</tr>
+</tbody>
+</table>
+<p>The string of trailing NA values in <span class="math inline">\(y\)</span> are interpreted by the package as the
+values to be nowcasted. Note that the values of <span class="math inline">\(x_1\)</span>, <span class="math inline">\(z_1\)</span>, and <span class="math inline">\(z_2\)</span> are available at these times, even
+though the values of <span class="math inline">\(y\)</span> are not.</p>
+<p>The <code>date</code> should be converted into a datetime object in R
+prior to use in this package, e.g. with <code>lubridate::ymd()</code>.
+Note that the column names can be arbitrary.</p>
+<p>Note the presence of NA values in the response and the predictors
+prior to nowcasting, which must be imputed for many of the methods we
+propose. Helper functions can be created to do some of the data
+processing steps as needed.</p>
+</div>
+<div id="nowcasting" class="section level2">
+<h2>Nowcasting</h2>
+<p>Starting with defining the specific problem that we are wanting to
+solve. When referring to nowcasting we denote the measurement of DAD at
+time <span class="math inline">\(t\)</span> by the value <span class="math inline">\(Y_t\)</span> and the measurements of the
+explanatory variables at time <span class="math inline">\(t\)</span> to
+be the values <span class="math inline">\(x_{1,t}\)</span> for RVDSS and
+<span class="math inline">\(z_{j,t}\)</span> where <span class="math inline">\(j \in \{1,2\}\)</span> representing CNISP, and
+PTSOS. Then the problem that we are working is how to predict the value
+of <span class="math inline">\(Y_t\)</span> given the values <span class="math inline">\(x_{1,t}\)</span>, <span class="math inline">\(z_{j,t}\)</span>, and previous (lag) values for
+each variable (including <span class="math inline">\(y_{t-l}\)</span>).</p>
+<p>We will be making several key assumptions in this project. The first
+is that any missing data for the explanatory variables can be at least
+somewhat successfully imputed by reasonable estimates. We will also
+assume that we have access to all the updated values of the explanatory
+variables at the time <span class="math inline">\(t\)</span> when we are
+making a prediction for <span class="math inline">\(y_t\)</span> (or
+they can be reasonably well imputed).</p>
+</div>
+<div id="uncertainty-quantification" class="section level2">
+<h2>Uncertainty Quantification</h2>
+<p>Regardless of the model used, the goal of this package is to predict
+the trailing NA values in the response variable and to provide estimates
+of the uncertainty of these predictions. Some of the proposed models
+include uncertainty estimates as part of their machinery (for example,
+linear models have closed-form prediction intervals), but others require
+numerical techniques.</p>
+<p>A model-agnostic estimate of prediction uncertainty is Ensemble-based
+Batch Prediction Intervals (EnBPI) <span class="citation">(Xu and Xie
+2021)</span>. Suppose we’re doing 5-step ahead prediction with a batch
+size of 50. We start by randomly sampling a “batch” from our complete
+data (not including the data to be nowcasted), that is, we take a string
+of 50 observations as well as the 5 next data points. We fit the model
+to the 50 observations and we make predictions for the next 5 data
+points. We record how far away our prediction is from the observed data.
+We do this many times to build up a data set of 5-step ahead prediction
+errors. We can look at, say, the 2.5% and 97.5% quantiles of these
+errors to get the width of our prediction interval. When we actually
+perform the nowcasts on the missing data, we center these intervals on
+our predictions.</p>
+<p>Since this approach works for any model (regardless of whether
+there’s a theoretical or closed-form solution for prediction intervals),
+we will apply this to all models for consistency. The only exception
+will be for any Bayesian models we might implement, for which we’ll use
+the posterior of the predicted values for all numerical summaries.</p>
+</div>
+<div id="a-note-on-predictions" class="section level2">
+<h2>A Note on Predictions</h2>
+<p>For models that use lagged values of DAD, special considerations must
+be made. In order to predict two steps ahead, the one-step ahead
+prediction is required. If the one-step-ahead prediction is poor, then
+the two-step-ahead prediction will also be poor. In this way, the
+k-step-ahead prediction gets more variable as k increases.</p>
+<p>This is not the case for models that do not rely on lagged values of
+DAD; predictions for k-steps-ahead can simply be made based on the
+covariates (there is no distinction for lagged versus current values of
+the covariates so long as the information is available). However, since
+models with lagged values of the response incorporate more information,
+they can generally be expected to make better predictions.</p>
+<p>In this package, any method that is implemented must have a way to
+handle <span class="math inline">\(k\)</span>-step ahead
+predictions.</p>
+<div id="prediction-of-unobserved-locations" class="section level3">
+<h3>Prediction of Unobserved Locations</h3>
+<p>The models will only be fit to data from a given location, but it may
+be reasonable to use the estimated model from one location to predict
+another location, for example in a location for which DAD is never
+observed.</p>
+<p>For non-lag-based models, this is straightforward. However, for
+models that use the lags of the response, any errors in the predictions
+for the first few values of DAD will propagate throughout all later
+predictions.</p>
+<p>The model will be designed to allow the user to input the formula,
+then the resultant object can be used for predictions on arbitrary data.
+This allows fitted models to be used to predict any other location. If
+the user wants to make predictions for locations with no DAD recorded,
+we make the following suggestions:</p>
+<ol style="list-style-type: decimal">
+<li>Make predictions for locations where DAD <em>is</em> known, and
+observe the prediction errors.</li>
+<li>There is no restriction in the package that DAD must be the
+response. Perhaps try fitting a model with, say, PTSOS as the response
+and predict the PTSOS at the other locations, observing the prediction
+errors. This gives a glimpse into how well one location’s data can
+predict another, especially given that PTSOS and CNISP are measuring
+something very similar to the response.</li>
+</ol>
+<p>The prediction errors from other locations should be interpreted
+carefully since there is absolutely no guarantee that the relationships
+in one location transfer to another.</p>
+</div>
+</div>
+<div id="imputation" class="section level2">
+<h2>Imputation</h2>
+<p>We expect there to be some missing data in the predictor variables.
+We plan on using imputation to deal with them since many time series
+methods require there to be no gaps in the data. The goal is that we
+will have relatively simple methods to impute the values of the
+explanatory variables <span class="math inline">\(x_1\)</span>, <span class="math inline">\(z_1\)</span>, <span class="math inline">\(z_2\)</span>, and if necessary <span class="math inline">\(y_t\)</span>, and the package will allow the user
+to specify the type of imputation to be used. The data has multiple
+potentially correlated variables, this could be used to improve the
+imputations, this will come in useful when we need to impute large
+sections of the explanatory variables such as when a region is missing a
+certain measurement, however for imputing <span class="math inline">\(y_t\)</span> we will use simpler methods since
+imputation is not the main focus of this project.</p>
+<p>There are several existing R packages that allow for imputation and
+work in a time series context, and while we do not want the program we
+are developing to be dependent on many packages it makes sense to use an
+existing package for the imputation since it is not a focus of the
+project.</p>
+<p>The package that we will be using in this project is imputeTS, a
+package in R for imputing univariate time series. It has the advantage
+of being specifically for time series data. It features a variety of
+complex methods for imputation such as; Kalman smoothing, and
+interpolation, as well as simple methods like using the last observation
+or the mean <span class="citation">(Moritz and Bartz-Beielstein
+2017)</span>. While this package does not take advantage of the
+multivariate nature of our data it is still a good option to impute the
+missing values in our data.</p>
+</div>
+<div id="potential-models" class="section level2">
+<h2>Potential Models</h2>
+<p>There are several different techniques for nowcasting in a time
+series context, in general they are organized from simplest to more
+complex:</p>
+<div id="simple-linear-models" class="section level3">
+<h3>Simple Linear Models</h3>
+<p>The first and simplest models that we will be looking at in this
+project are linear models where the value of DAD we are nowcasting is
+dependent on the current values of the explanatory variables: <span class="math display">\[
+y_t = \alpha_0 x_t + \beta_1 z_{t,1} + \beta_2 z_{t,2} + \epsilon_t
+\]</span></p>
+<p>We can build on this basic model by adding the complexity of lagging
+the values of the explanatory variables: <span class="math display">\[
+y_t = \alpha_0 x_t + \alpha_1 x_{t-1} + \beta_1 z_{t,1} + \beta_2
+z_{t,2} + \epsilon_t
+\]</span></p>
+</div>
+<div id="mechanistic-models" class="section level3">
+<h3>Mechanistic Models</h3>
+<p>In the simple linear models, the user can input whatever predictors
+they want (including lag terms and non-linear transformations). However,
+the nature of the data suggests a possible mechanistic model. The
+following model structure was suggested by David Champredon.</p>
+<p>Let <span class="math inline">\(D_t\)</span> be the DAD admission
+data (<span class="math inline">\(y_t\)</span> in the previous
+notation), <span class="math inline">\(R_t\)</span> be the positive
+tests from the RVDSS data (<span class="math inline">\(x_t\)</span>),
+and <span class="math inline">\(C_t\)</span> and <span class="math inline">\(P_t\)</span> be the total admissions and positive
+tests from the CNISP and PTSOS data, respectively (<span class="math inline">\(z_1\)</span> and <span class="math inline">\(z_2\)</span>). The following assumptions lay the
+foundation of the mechanistic model:</p>
+<ol style="list-style-type: decimal">
+<li>The total admissions are a constant fraction of the total positive
+tests.
+<ul>
+<li><span class="math inline">\(D_t \approx \eta R_t\)</span>,
+e.g. <span class="math inline">\(\eta\)</span> = 20% of cases are
+hospitalized.</li>
+<li><span class="math inline">\(\eta\)</span> is the “virulence”</li>
+</ul></li>
+<li>The total admissions are a constant fraction of <em>each of</em> the
+provincial and national hospital data.
+<ul>
+<li><span class="math inline">\(\hat s_c D_t \approx C_t\)</span> and
+<span class="math inline">\(\hat s_p D_t \approx P_t\)</span></li>
+<li><span class="math inline">\(\hat s_c\)</span> and <span class="math inline">\(\hat s_p\)</span> are the sampling rates, which
+are assumed to be known from historical data.</li>
+</ul></li>
+</ol>
+<p>This gives us three equations with parameters/error terms to be
+estimated simultaneously: <span class="math display">\[\begin{align*}
+E(D_t) &amp;= \eta R_t\\
+E(C_t) &amp;= \eta \hat s_c R_t\\
+E(P_t) &amp;= \eta \hat s_p R_t
+\end{align*}\]</span></p>
+<p>The interpretation of this model is that the test positivity is
+linearly related to hopsitalizations, with a coefficient that is
+consistent across DAD, PTSOS, and CNISP. There is an adjustment to the
+coefficients for CNISP and PTSOS as they are assumed to be samples from
+DAD. The benefit of this framework is a more robust estimate of <span class="math inline">\(\eta\)</span>, but this requires fairly strict
+assumptions on the data generating process.</p>
+<p>Assuming independence between <span class="math inline">\(D_t\)</span>, <span class="math inline">\(C_t\)</span>, and <span class="math inline">\(P_t\)</span> (conditional on <span class="math inline">\(R_t\)</span> and the parameters), this model can
+be estimated via Bayesian methods or with MLE. The likelhood factors
+into three parts: <span class="math display">\[\begin{align*}
+f(D_t, C_t, P_t | \eta, R_t, ...) &amp;= f_d(D_t|\eta, R_t, ...)
+f_c(C_t|\eta, R_t, ...) f_p(P_t|\eta, R_t, ...)
+\end{align*}\]</span> and we can assume an appropriate likelihood for
+each response. The “<span class="math inline">\(...\)</span>” in each
+factor allows for likelihoods with further parameters. If we assume a
+normal distribution (i.e., simple linear regression for each), then the
+“<span class="math inline">\(...\)</span>” takes the place of the
+variance terms (which could also allow for correlation). A Poisson GLM
+would not require further parameters, but a Negative Binomial GLM would
+extend the Poisson GLM to include a dispersion parameter. There is no
+restriction that each model have the same distribution, but doing so may
+allow for a closed-form solution for <span class="math inline">\(\eta\)</span> by minimizing the log
+likelihood.</p>
+<p>Some other notes:</p>
+<ul>
+<li>It may be beneficial to allow for correlated errors across the three
+models. It seems likely that if, say, CNISP is being underpredicted by
+<span class="math inline">\(R_t\)</span> then so is PTSOS. This is
+possible in a basic linear regression (Gaussian) framework, but
+difficult in GLMs in general. For Poisson and Negative Binomial, further
+research (as part of a separate project) into copula modelling or shared
+random effects may be appropriate.</li>
+<li>This model assumes that <span class="math inline">\(\hat
+s_c\)</span> and <span class="math inline">\(\hat s_p\)</span> are known
+from historical data, but since we have multiple response variables it
+would be feasible to estimate these from the data. The package can be
+modified to allow for this in the future.</li>
+</ul>
+</div>
+<div id="non-linear-models" class="section level3">
+<h3>Non-linear Models</h3>
+<p>In additional all the previous linear models we will also be
+considering non-linear models/processes. In this project we are seeking
+to predict the current values of DAD, not create an explanatory model.
+This allows us to use many ML models since they are focused on creating
+predictions not on the explanatory power of the resulting model.</p>
+<p>The simplest option is to use splines to create a basic spline model
+of the response (DAD) based on the current values of our explanatory
+variables: <span class="math display">\[
+y_t = \sum_{i=0}^n \alpha_i b_i(x_{t}) + \sum_{j=0}^m \beta_j
+b_j(z_{t,1}) + \sum_{k=0}^l \gamma_k b_k(z_{t,2}) + \epsilon_t
+\]</span> Where <span class="math inline">\(b_i(), \ b_j(), \
+b_k()\)</span> are all basis splines. There is room to expand this to
+include the past values of the explanatory variables.</p>
+<p>Random forests are also a good technique for us to use on this
+project, since they are relatively easy to implement and are a powerful
+tool, the predictive capabilities can be further enhanced by using
+techniques like XGboost. Random Forests work best when there are many
+variables for them to select, and find non-linear patterns between. In
+this project, we only have our three main covariates to work with,
+however the time bound nature of our data allows us to use the lagged
+values of the covariates, to enhance the number of variables we are
+working with. The Random Forest model would then be able to predict
+future values of DAD based on some combination of the current and lagged
+values of the explanatory variables. There are also many available R
+packages for Gaussian process regression which may be applicable to
+these data <span class="citation">(Rasmussen and Williams
+2008)</span>.</p>
+<p>There are other potential models that we may want to use in this
+project such as simple neural nets <span class="citation">(Richardson,
+Mulder, and Vehbi 2019)</span>. The models discussed here are the ones
+we will definitely be using and a good starting point, but throughout
+the project other useful models will likely come up and we will be using
+those as well. We will be careful to ensure that any models we apply are
+well-established models with known properties and robust R packages; we
+won’t reinvent the wheel but we also won’t use models with unclear
+properties or error-ridden implementations.</p>
+<p>The package will also provide an API to allow additional models. The
+user can specify a function (or functions) with well-defined (and
+well-documented) inputs and outputs.</p>
+</div>
+<div id="arx" class="section level3">
+<h3>ARX</h3>
+<p>A natural next step is to model the process as an ARX process, that
+is as an AR system that is based on previous values of the variables
+itself but also dependent on current and past values of some external
+explanatory variable. We can represent it by the following equations
+<span class="citation">(Picci 2024)</span>:</p>
+<p><span class="math display">\[
+y_t = \sum_{i=0}^n \alpha_{t-i} x_{t-i} + \sum_{i=0}^p \gamma_{t-i}
+z_{t-i,1} + \sum_{i=0}^p \gamma_{t-i} z_{t-i,2} + \sum_{j=1}^m
+\beta_{t-i} y_{t-i} + \epsilon_t
+\]</span></p>
+<p>Where <span class="math inline">\(\alpha_i\)</span> represents the
+impacts of the external variables and <span class="math inline">\(\beta_i\)</span>’s are the parameters for the AR
+model and have the same interpretation of being measures of the impact
+of previous terms in the sequence. Note that the summation index for
+<span class="math inline">\(y_{t-i}\)</span> starts at 1 since the
+previous value will be used, but the sum starts at 0 for the covariates
+since we are using the current value of the covariates.</p>
+<p>The ARX model is a special case of the ARIMAX model where the
+integration and moving average parts are both 0. The
+<code>arima()</code> function in R will be used for estimation, so
+expanding the ARX model to an ARIMAX one is straightforward.</p>
+</div>
+<div id="kalman-filtersmoothing" class="section level3">
+<h3>Kalman filter/Smoothing</h3>
+<p>A common method in nowcasting time series data is using the Kalman
+Filter <span class="citation">(Rossi et al. 2015)</span>. The Kalman
+filter predicts one step ahead and its algorithm works in two steps,
+first creating a prediction, and then after the actual data is observed,
+updating that prediction using the Kalman gain. This acts as a smoother,
+where the predictions can be treated as if they are equally as “true” as
+the observed values. In other words, this is treating the response as if
+it is measured with error and the true value is somewhere between the
+observed value and the prediction. Of course, this assumes that we are
+able to create good predictions, which is why Kalman filter models are
+often complex, including careful estimation of the covariance between
+the predictions and the observed values and often employing multivariate
+Gaussian Process modelling.</p>
+<p>There are several R packages that can be used to run a Kalman Filter
+with varying levels of complexity <span class="citation">(Tusell
+2011)</span>.</p>
+</div>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1 class="unnumbered">References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="ref-moritzImputeTSTimeSeries2017" class="csl-entry">
+Moritz, Steffen, and Thomas Bartz-Beielstein. 2017. <span>“<span class="nocase">imputeTS</span>: <span>Time Series Missing Value
+Imputation</span> in <span>R</span>.”</span> <em>The R Journal</em> 9
+(1): 207–18. <a href="https://doi.org/10.32614/RJ-2017-009">https://doi.org/10.32614/RJ-2017-009</a>.
+</div>
+<div id="ref-picciARXModelingTime2024" class="csl-entry">
+Picci, Giorgio. 2024. <span>“<span>ARX Modeling</span> of <span>Time
+Series</span>.”</span> In <em>An <span>Introduction</span> to
+<span>Statistical Data Science</span></em>, 345–83. Springer Books.
+</div>
+<div id="ref-rasmussenGaussianProcessesMachine2008" class="csl-entry">
+Rasmussen, Carl Edward, and Christopher K. I. Williams. 2008.
+<em>Gaussian Processes for Machine Learning</em>. 3. print. Adaptive
+Computation and Machine Learning. Cambridge, Mass.: MIT Press.
+</div>
+<div id="ref-richardsonNowcastingGDPUsing2019" class="csl-entry">
+Richardson, Adam, Thomas van Florenstein Mulder, and Tugrul Vehbi. 2019.
+<span>“Nowcasting <span>GDP</span> Using Machine Learning Algorithms:
+<span>A</span> Real-Time Assessment.”</span> <em>Reserve Bank of New
+Zealand Discussion Paper Series</em>, no. DP2019/03 (November).
+</div>
+<div id="ref-rossiKalmanFilteringBased2015" class="csl-entry">
+Rossi, Pekka J., V. Chandrasekar, Vesa Hasu, and Dmitri Moisseev. 2015.
+<span>“Kalman <span>Filtering</span>–<span>Based Probabilistic
+Nowcasting</span> of <span>Object-Oriented Tracked Convective
+Storms</span>.”</span> <em>Journal of Atmospheric and Oceanic
+Technology</em> 32 (3): 461–77. <a href="https://doi.org/10.1175/JTECH-D-14-00184.1">https://doi.org/10.1175/JTECH-D-14-00184.1</a>.
+</div>
+<div id="ref-tusellKalmanFiltering2011" class="csl-entry">
+Tusell, Fernando. 2011. <span>“Kalman <span>Filtering</span> in
+<span><em>R</em></span>.”</span> <em>Journal of Statistical
+Software</em> 39 (2). <a href="https://doi.org/10.18637/jss.v039.i02">https://doi.org/10.18637/jss.v039.i02</a>.
+</div>
+<div id="ref-xuConformalPredictionInterval2021" class="csl-entry">
+Xu, Chen, and Yao Xie. 2021. <span>“Conformal Prediction Interval for
+Dynamic Time-Series.”</span> In <em>Proceedings of the 38th
+<span>International Conference</span> on <span>Machine
+Learning</span></em>, 11559–69. PMLR.
+</div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
