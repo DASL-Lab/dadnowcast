@@ -97,7 +97,7 @@ add_model.multidadnow <- function(multidadnow, formula = NULL, model, params = N
 
   if (is.null(formula)) {
     formula <- multidadnow$models[[1]]$formula
-    message(paste0("Using formula from first registered model: ", deparse(formula), "\n"))
+    message(paste0("Using formula from first registered model: ", deparse(formula)))
   }
   
   prepped_data <- prep_data(
@@ -116,6 +116,7 @@ add_model.multidadnow <- function(multidadnow, formula = NULL, model, params = N
     train_window = NULL,
     level = 0.95
   )
+  
 
   new_preds <- dispatch_model(model)(
     X_train = rbind(prepped_data$X_train, prepped_data$X_test),
@@ -137,7 +138,6 @@ add_model.multidadnow <- function(multidadnow, formula = NULL, model, params = N
   multidadnow$data <- aug_data
   
   multidadnow$models[[length(multidadnow$models) + 1]] <- list(
-    model_id = model_id,
     formula = formula,
     date_col = multidadnow$date_col,
     prepped_data = prepped_data,
@@ -148,6 +148,7 @@ add_model.multidadnow <- function(multidadnow, formula = NULL, model, params = N
   )
 
   all_evals <- do.call(rbind, lapply(multidadnow$models, function(x) x$evals))
+  rownames(all_evals) <- make_model_id(all_evals)
   multidadnow$evals <- all_evals[order(all_evals$model), ]
 
   model_ids <- make_model_id(multidadnow$evals)

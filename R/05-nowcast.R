@@ -60,7 +60,7 @@ nowcast <- function(
     evals = enbpi$evals,
     models = list(
       list(
-        model_id = "m1f1a",
+        model_id = make_model_id(enbpi$evals),
         formula = formula,
         prepped_data = prepped_data,
         model = nowcast$model,
@@ -72,18 +72,14 @@ nowcast <- function(
     )
   )
 
-  names(dadnow_obj$models)[1] <- "m1f1a"
+  names(dadnow_obj$models)[1] <- make_model_id(enbpi$evals)
   class(dadnow_obj) <- "multidadnow"
 
   dadnow_obj
 }
 
 make_model_id <- function(evals) {
-  if (nrow(evals) == 1) {
-    return("m1p1a")
-  }
 
-  evals_global <<- evals
   all_formulas <- paste0("f", match(evals$formula, unique(evals$formula)))
   all_models <- evals$model#paste0("m", match(evals$model, unique(evals$model)))
   model_ids <- paste0(all_formulas, "_",  all_models)
@@ -94,9 +90,11 @@ make_model_id <- function(evals) {
     all_formulas,
     FUN = seq_along
   )
-
   
-  paste0(model_ids, "_", letters[param_set])
+  suffix <- ifelse(param_set > 1, letters[param_set], "")
+  model_ids <- paste0(model_ids, suffix)
+
+  model_ids
 }
 
 dispatch_model <- function(model, x_train, y_train, x_nowcast, params) {
@@ -131,7 +129,7 @@ nowcast_mechanistic <- function(
 ) {
 
   prepped_data <- prep_data(
-    formula, data, model = "mechanistic", date_col = date_col
+    formula, data, model = paste0("mech_", params$method), date_col = date_col
   )
 
   
@@ -192,7 +190,7 @@ nowcast_mechanistic <- function(
     evals = enbpi$evals,
     models = list(
       list(
-        model_id = model_id,
+        model_id = make_model_id(enbpi$evals),
         formula = paste0("mech_", params$method),
         prepped_data = prepped_data,
         model = dadnow_mech$model,
