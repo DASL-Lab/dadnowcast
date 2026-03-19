@@ -64,5 +64,5 @@ Y_train <- iris$Sepal.Length[1:140]
 X_train <- iris[1:140, -c(1, 5)]
 X_nowcast <- iris[141:150, -c(1, 5)]
 
-fit_example(Y_train, X_train, X_nowcast)
+fit_example(Y_train, X_train, X_nowcast, params = list(foo = 2))
 ```
