@@ -39,19 +39,18 @@ The function must be a named list with three entries:
 Suppose I wish to write a function that takes two vectors $x$ and $y$ and then creates the model $y \sim foo \cdot x$, where $foo$ is a variable that I specify. The function then uses this model to make predictions and output them. I would write this function in the following way.
 
 ```{r}
-fit_example <- function(Y_train, X_train, X_nowcast, params = list(foo = 2)){
+fit_example <- function(Y_train, X_train, X_nowcast, params = list(foo = 2)) {
   # create the new data frame including the desired impact of foo
-  newX <- data.frame(foo*X_train)
-  data <- cbind(Y_train,newX)
-  
+  newX <- data.frame(params$foo * X_train)
+  data <- cbind(Y_train, newX)
+
   # create the actual model
   mod <- lm(Y_train ~ ., data = data)
-  
+
   # create the predictions
   colnames(X_nowcast) <- colnames(newX)
-  preds <- data.frame(predict(mod, data.frame(X_nowcast)))
-  colnames(preds) <- "prediction"
-  
+  preds <- data.frame(prediction = predict(mod, data.frame(X_nowcast)))
+
   # create the output
   list(model = mod, prediction = preds, fitted_values = fitted.values(mod))
 }
@@ -60,10 +59,10 @@ fit_example <- function(Y_train, X_train, X_nowcast, params = list(foo = 2)){
 And it would be used automatically by the package, or you could use it manually in the following way:
 
 ```{r}
-  data("iris")
-  Y_train <- iris$Sepal.Length[1:140]
-  X_train <- iris[1:140,-c(1,5)]
-  X_nowcast <- iris[141:150,-c(1,5)]
-  
-  fit_example(Y_train, X_train, X_nowcast, params = list(foo = 2))
+data("iris")
+Y_train <- iris$Sepal.Length[1:140]
+X_train <- iris[1:140, -c(1, 5)]
+X_nowcast <- iris[141:150, -c(1, 5)]
+
+fit_example(Y_train, X_train, X_nowcast)
 ```
