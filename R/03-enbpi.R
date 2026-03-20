@@ -15,7 +15,6 @@ enbpi <- function(X_train, y_train, model, formula, params, k, batches = 40, tra
 
   if (is.null(train_window)) train_window <- floor(0.6 * length(y_train))
   
-
   train_indices <- sample(1:(length(y_train) - k - train_window), batches, replace = TRUE)
 
   preds <- vector(mode = "list", length = batches)

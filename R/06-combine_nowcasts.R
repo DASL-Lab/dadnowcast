@@ -6,6 +6,13 @@
 #' @returns A single multidadnow object.
 #' @export
 combine_nowcasts <- function(dadnow1, dadnow2) {
+
+  d1 <- c(batches = dadnow1$batches, train_window = dadnow1$train_window, level = dadnow1$level)
+  d2 <- c(batches = dadnow2$batches, train_window = dadnow2$train_window, level = dadnow2$level)
+
+  if (any(d1 != d2)) {
+    stop("Batches, train_window, and level must be the same for all nowcasts.")
+  }
   data <- rbind(dadnow1$data, dadnow2$data)
   data <- data[!duplicated(data), ]
 
@@ -23,6 +30,9 @@ combine_nowcasts <- function(dadnow1, dadnow2) {
     date_col = dadnow1$date_col,
     data = data,
     evals = evals,
+    batches = dadnow1$batches,
+    train_window = dadnow1$train_window,
+    level = dadnow1$level,
     models = models
   )
   class(return_value) <- "multidadnow"

@@ -8,11 +8,11 @@ nowcast(
   formula,
   data,
   model,
+  params = NULL,
+  date_col = NULL,
   batches = 40,
   train_window = NULL,
-  level = 0.95,
-  params = NULL,
-  date_col = NULL
+  level = 0.95
 )
 }
 \arguments{
@@ -22,15 +22,15 @@ nowcast(
 
 \item{model}{The model to use for nowcasting. Currently implemented: "lm", "ar". Can be a vector, in which case the model is trained for each model in the vector.}
 
+\item{params}{The parameters to use for the model. Must be a named list.}
+
+\item{date_col}{Name of the column containing date information. If NULL, the date information attempted to be inferred. If there's a single datetime column then it is used. If the data are a ts or mts or zoo object, the dates are esxtracted.}
+
 \item{batches}{The number of batches to use for training in the EnbPI calculation (akin to the number of folds for k-fold cross validation).}
 
 \item{train_window}{The number of days to use for training. Defaults to 60\% of the training data, which allows for a large training set for each batch while also allowing for a reasonable amount of variation in the test sets.}
 
 \item{level}{The prediction interval level.}
-
-\item{params}{The parameters to use for the model. Must be a named list.}
-
-\item{date_col}{Name of the column containing date information. If NULL, the date information attempted to be inferred. If there's a single datetime column then it is used. If the data are a ts or mts or zoo object, the dates are esxtracted.}
 }
 \value{
 An object of class "\code{dadnow}".

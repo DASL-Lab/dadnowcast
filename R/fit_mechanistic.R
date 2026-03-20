@@ -96,6 +96,16 @@ fit_mechanistic <- function(
   Y_train, X_train = NULL, X_nowcast = NULL,
   params = list(sc = 0.2, sp = 0.3, method = "normal")
 ) {
+  if (!"sc" %in% names(params)) {
+    params$sc <- 0.2
+  }
+  if (!"sp" %in% names(params)) {
+    params$sp <- 0.3
+  }
+  if (!"method" %in% names(params)) {
+    params$method <- "normal"
+  }
+  
   Dt <- Y_train
   Ct <- X_train[, 1]
   Pt <- X_train[, 2]
