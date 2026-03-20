@@ -13,7 +13,7 @@ add_model <- function(x, ...) {
 
 
 #' @rdname add_model
-add_model.multidadnow <- function(multidadnow, formula = NULL, model, params = NULL) {
+add_model.multidadnow <- function(multidadnow, model, formula = NULL, params = NULL) {
   
   
   if ("model" %in% names(multidadnow$data)) {
@@ -69,7 +69,7 @@ add_model.multidadnow <- function(multidadnow, formula = NULL, model, params = N
     date_col = multidadnow$date_col,
     prepped_data = prepped_data,
     model = new_preds$model,
-    predictions = new_preds$prediction$prediction,
+    predictions = new_preds$prediction,
     evals = enbpi$evals,
     enbpi = enbpi$enbpi,
     params = params
