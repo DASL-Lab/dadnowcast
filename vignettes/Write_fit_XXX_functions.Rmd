@@ -1,0 +1,68 @@
+---
+title: "Write_fit_XXX_functions"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Write_fit_XXX_functions}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(fatherStay)
+```
+
+This vignette details how to write `fit_*` functions so that they integrate well with the rest of the package. There are only really two important constraints on writing custom `fit_*` functions, they are that it must take in the proper input and give out the proper outputs.
+
+# Inputs
+There are three inputs for data: `Y_train`, `X_train`, and `X_nowcast`, and an input `params` which is a named list for the parameters specific to that function. For example, a function with a parameter `foo` would be:
+
+```{r}
+fit_example <- function(Y_train, X_train, X_nowcast, params = list(foo = 2)){
+
+}
+```
+
+# Outputs
+The function must be a named list with three entries:
+- `model`, which has the model created
+- `prediction`, which has the predictions from the model on the nowcasting data in the format of a data frame
+- `fitted_values`, which is the values from fitting the model on the training data
+
+# Example
+Suppose I wish to write a function that takes two vectors $x$ and $y$ and then creates the model $y \sim foo \cdot x$, where $foo$ is a variable that I specify. The function then uses this model to make predictions and output them. I would write this function in the following way.
+
+```{r}
+fit_example <- function(Y_train, X_train, X_nowcast, params = list(foo = 2)) {
+  # create the new data frame including the desired impact of foo
+  newX <- data.frame(params$foo * X_train)
+  data <- cbind(Y_train, newX)
+
+  # create the actual model
+  mod <- lm(Y_train ~ ., data = data)
+
+  # create the predictions
+  colnames(X_nowcast) <- colnames(newX)
+  preds <- data.frame(prediction = predict(mod, data.frame(X_nowcast)))
+
+  # create the output
+  list(model = mod, prediction = preds, fitted_values = fitted.values(mod))
+}
+```
+
+And it would be used automatically by the package, or you could use it manually in the following way:
+
+```{r}
+data("iris")
+Y_train <- iris$Sepal.Length[1:140]
+X_train <- iris[1:140, -c(1, 5)]
+X_nowcast <- iris[141:150, -c(1, 5)]
+
+fit_example(Y_train, X_train, X_nowcast, params = list(foo = 2))
+```
