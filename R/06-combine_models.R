@@ -14,38 +14,9 @@ combine_dadnow <- function(dadnow1, dadnow2) {
   rownames(evals1) <- NULL
   rownames(evals2) <- NULL
   evals <- rbind(evals1, evals2)
-  rownames(evals) <- make_model_id(evals)
+  model_ids <- make_model_id(evals)
+  rownames(evals) <- model_ids
 
-  if (inherits(dadnow1, "dadnow") && inherits(dadnow2, "dadnow")) {
-    return_value <- list(
-      date_col = dadnow1$date_col,
-      data = data,
-      evals = evals,
-      models = list(dadnow1, dadnow2)
-    )
-    names(return_value$models) <- c(dadnow1$model_id, dadnow2$model_id)
-    class(return_value) <- "multidadnow"
-  } else if (inherits(dadnow1, "multidadnow") && inherits(dadnow2, "dadnow")) {
-    models <- c(dadnow1$models, list(dadnow2))
-    names(models)[length(models)] <- dadnow2$model_id
-    return_value <- list(
-      date_col = dadnow1$date_col,
-      data = data,
-      evals = evals,
-      models = models
-    )
-    class(return_value) <- "multidadnow"
-  } else if (inherits(dadnow1, "dadnow") && inherits(dadnow2, "multidadnow")) {
-    models <- c(list(dadnow1), dadnow2$models)
-    names(models)[1] <- dadnow1$model_id
-    return_value <- list(
-      date_col = dadnow2$date_col,
-      data = data,
-      evals = evals,
-      models = models
-    )
-    class(return_value) <- "multidadnow"
-  } else if (inherits(dadnow1, "multidadnow") && inherits(dadnow2, "multidadnow")) {
     models <- c(dadnow1$models, dadnow2$models)
     names(models) <- c(names(dadnow1$models), names(dadnow2$models))
     return_value <- list(

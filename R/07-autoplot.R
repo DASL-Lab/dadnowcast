@@ -1,32 +1,3 @@
-#' Plot the nowcasts
-#'
-#' Deprecated - "dadnow" objects are no longer used, but I don't want to break anything.
-#' 
-#' @importFrom ggplot2 autoplot
-#' @export
-autoplot.dadnow <- function(dadnow, last_n = NULL) {
-  plot_data <- data.frame(
-    x = dadnow$data$dates_train,
-    y = dadnow$data$y_train,
-    method = "Training Data"
-  )
-  if (is.null(last_n)) last_n <- length(dadnow$data$dates_nowcast)
-  if (last_n >= nrow(plot_data)) last_n <- nrow(plot_data) - 1
-  plot_data <- plot_data[(nrow(plot_data)- last_n):nrow(plot_data), ] 
-
-  plot_data <- rbind(plot_data, 
-    data.frame(
-      x = dadnow$data$dates_nowcast,
-      y = dadnow$predictions,
-      method = dadnow$model_id
-    )
-  )
-
-  ggplot2::ggplot(data = plot_data) +
-    ggplot2::aes(x = x, y = y, colour = method) +
-    ggplot2::geom_line() +
-    ggplot2::labs(x = "Date", y = "Prediction", colour = "Model")
-}
 
 #' Plot the nowcasts
 #' 

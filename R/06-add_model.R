@@ -11,81 +11,8 @@ add_model <- function(x, ...) {
   UseMethod("add_model")
 }
 
-#' Add a model to an existing dadnow object
-#'
-#' @param dadnow A dadnow object.
-#' @param model The model to add.
-#' @param params The parameters to use for the model. Must be a named list.
-#'
-#' @returns A dadnow object with the model added.
-#' @export
-add_model.dadnow <- function(dadnow, formula = NULL, model, params = NULL) {
-  
-  if (is.null(formula)) {
-    formula <- dadnow$formula
-  }
 
-  if ("model" %in% names(dadnow$data)) {
-    model_data <- dadnow$data[dadnow$data$model == "Training", ]
-  } else {
-    model_data <- dadnow$data
-  }
-  prepped_data <- prep_data(
-    formula = formula, data = model_data, model = model, date_col = dadnow$date_col, cross_val_indices = dadnow$cross_val_indices
-  )
-
-  new_eval <- cross_val_error(
-    X_train = prepped_data$X_train, y_train = prepped_data$y_train, folds = prepped_data$cross_val_indices,
-    model = model, params = params
-  )
-
-  new_preds <- dispatch_model(model)(
-    X_train = prepped_data$X_train,
-    Y_train = prepped_data$y_train,
-    X_nowcast = prepped_data$X_nowcast,
-    params = params
-  )
-
-  dadnow_one <- list(
-    model_id = dadnow$model_id,
-    formula = dadnow$formula,
-    date_col = dadnow$date_col,
-    prepped_data = dadnow$prepped_data,
-    model = dadnow$model,
-    predictions = dadnow$prediction$prediction,
-    evals = dadnow$evals,
-    params = params
-  )
-
-  dadnow_two <- list(
-    model_id = model_id,
-    formula = formula,
-    date_col = dadnow$date_col,
-    prepped_data = prepped_data,
-    model = new_preds$model,
-    predictions = new_preds$prediction$prediction,
-    evals = new_eval,
-    params = params
-  )
-
-  multidadnow <- list(
-    date_col = dadnow$date_col,
-    data = model_data,
-    models = list(dadnow_one, dadnow_two)
-  )
-  model_ids <- make_model_id(enbpi$evals)
-  names(multidadnow$models) <- model_ids
-  for (i in seq_along(multidadnow$models)) {
-    multidadnow$models[[i]]$model_id <- model_ids[i]
-  }
-
-  class(multidadnow) <- "multidadnow"
-
-  multidadnow
-}
-
-#' @rdname add_model.dadnow
-#' @export
+#' @rdname add_model
 add_model.multidadnow <- function(multidadnow, formula = NULL, model, params = NULL) {
   
   
