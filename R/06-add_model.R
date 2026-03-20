@@ -7,13 +7,7 @@
 #'
 #' @returns A dadnow or multidadnow object with the model added.
 #' @export
-add_model <- function(x, ...) {
-  UseMethod("add_model")
-}
-
-
-#' @rdname add_model
-add_model.multidadnow <- function(multidadnow, model, formula = NULL, params = NULL) {
+add_model <- function(multidadnow, model, formula = NULL, params = NULL) {
   
   
   if ("model" %in% names(multidadnow$data)) {
