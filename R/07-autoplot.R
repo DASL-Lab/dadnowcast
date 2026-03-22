@@ -9,14 +9,17 @@
 autoplot.multidadnow <- function(multidadnow, se = FALSE, last_n = Inf, alpha = 0.2) {
   plot_data <- multidadnow$data[!is.na(multidadnow$data[, multidadnow$response]), ]
   
+  # Get the training data, and only plot the last n observations.
   training_data <- plot_data[plot_data$model == "Training", ]
   if (last_n < nrow(training_data)) {
     training_data <- training_data[(nrow(training_data) - last_n):nrow(training_data), ]
   }
+  # Remove the model column so that it applies to all facets, if used.
   training_data$model <- NULL
 
   plot_data <- plot_data[plot_data$model != "Training", ]
 
+  # Bare object. I want the nowcasts to be the top layer, so they come later.
   g <- ggplot2::ggplot()
     
   if (se) {
@@ -45,7 +48,7 @@ autoplot.multidadnow <- function(multidadnow, se = FALSE, last_n = Inf, alpha = 
           x = !!sym(multidadnow$date_col),
           y = !!sym(multidadnow$response)
         ),
-        colour = "black",          # optional: make it stand out
+        colour = "grey", 
         size   = 1,
         inherit.aes = FALSE
       )

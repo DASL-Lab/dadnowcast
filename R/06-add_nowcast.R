@@ -9,7 +9,8 @@
 #' @export
 add_nowcast <- function(multidadnow, model, formula = NULL, params = NULL) {
   
-  
+  # If the multidadnow object has already been fit to data, the "data" already has nowcasts in it. 
+  # This removes the nowcasts, but keeps the training data (which includes the data to be nowcast, so "training" is a bit of a misnomer).
   if ("model" %in% names(multidadnow$data)) {
     model_data <- multidadnow$data[multidadnow$data$model == "Training", ]
   } else {
@@ -21,6 +22,8 @@ add_nowcast <- function(multidadnow, model, formula = NULL, params = NULL) {
     message(paste0("Using formula from first registered model: ", deparse(formula)))
   }
   
+  # Fit a new nowcasting model, using anuthing from the multidadnow object that is relevant.
+  # Ensures consistency between nowcasts.
   new_dadnow <- nowcast(
     formula = formula,
     data = model_data,

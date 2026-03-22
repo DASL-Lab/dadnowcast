@@ -20,6 +20,7 @@
 #' - "rf", a random forest model, a tree based model that grows many trees and combines the output to pick a prediction, it takes parameters `ntree` the number of trees to grow, `mtry` the number of variables used as candidates at each split, `weights` weights the sample data, `replace` should sampling be done with or without replacement, `maxnodes` limits the number of terminal nodes, `nodesize` sets the minimum size of the terminal nodes.
 #' - "xgboost", a extreme gradient boosting model, which is a tree based model in which subsequent trees learn from previous trees, it takes parameters `nrounds` which is the number of boosting iteration to do, and `XGBparams` a list of more parameters used in the model the most important of which is `max_depth` both `nrounds` and `max_depth` are tuned if their values are not specified, it also takes `verbose` should output be silent (0) or not (1).
 #' - "mechanistic", creates a mechanistic model, `sc`, `sp`, and `method` specifies the family.
+#' - See `vignette("Write_fit_XX_functions", package = "fatherStay")` for how to write your own model for use in this package.
 #' 
 #'
 #' @returns An object of class "`dadnow`".
@@ -138,6 +139,7 @@ nowcast <- function(
   # Note that model ids can change as things are added to the dadnow object.
   model_ids <- make_model_id(enbpi$evals)
   names(dadnow$models) <- model_ids
+  # Ensure the internal model ids are updated.
   for (i in seq_along(dadnow$models)) {
     dadnow$models[[i]]$model_id <- model_ids[i]
   }
@@ -166,6 +168,9 @@ make_model_id <- function(evals) {
   model_ids
 }
 
+#' Choose a model to use for nowcasting
+#'
+#' @param model The model to use for nowcasting. If not specified, the function attempts to find a function called `model`. See `vignette("Write_fit_XX_functions", package = "fatherStay")` for how to write your own model for use in this package.
 dispatch_model <- function(model) {
   switch(model,
     "lm" = fit_LM,
