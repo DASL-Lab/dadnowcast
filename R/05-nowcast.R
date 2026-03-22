@@ -137,6 +137,16 @@ make_model_id <- function(evals) {
   model_ids
 }
 
+# A short overview of the specific models used here is given below, more details can be found in the vignette `Model_Details`.
+# - "lm", a standard linear model, which takes no additional parameters.
+# - "ar", an autoregressive model, it has the parameter `p` which is the degree of the AR model.
+# - "arx", an autoregressive model with exogenous variables, it is an AR model that adds the capacity to consider explanatory variables, it has the same parameters as an ar model.
+# - "arima", an ARIMA model combines an AR model with a moving average (MA) model, it has parameters `p`, which specifies the degree of the AR component, `d` which specifies the degree of differencing in the model, and `q` which is the degree of the moving average model.
+# - "gam", a generalized additive model, it has parameters `family` to specify the family used, `smooths` which is smoothing parameters for each variable, and `bs` which specifies basis smoothing functions.
+# - "kf", a Kalman filter model, which is a continuously updating model with a prediction and update portion, it takes additional parameters `degree` which specifies the degree of the trend, and `CovMatrix` which is a covariance matrix for the disturbance terms.
+# - "rf", a random forest model, a tree based model that grows many trees and combines the output to pick a prediction, it takes parameters `ntree` the number of trees to grow, `mtry` the number of variables used as candidates at each split, `weights` weights the sample data, `replace` should sampling be done with or without replacement, `maxnodes` limits the number of terminal nodes, `nodesize` sets the minimum size of the terminal nodes.
+# - "xgboost", a extreme gradient boosting model, which is a tree based model in which subsequent trees learn from previous trees, it takes parameters `nrounds` which is the number of boosting iteration to do, and `XGBparams` a list of more parameters used in the model the most important of which is `max_depth` both `nrounds` and `max_depth` are tuned if their values are not specified, it also takes `verbose` should output be silent (0) or not (1).
+# - "mechanistic", creates a mechanistic model, `sc`, `sp`, and `method` specifies the family.
 dispatch_model <- function(model, x_train, y_train, x_nowcast, params) {
   switch(model,
     "lm" = fit_LM,
