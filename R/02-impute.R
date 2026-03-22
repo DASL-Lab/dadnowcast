@@ -20,7 +20,7 @@ impute_linear <- function(dates, x) {
       next_non_na <- next_non_na + 1
     }
 
-    if (next_non_na - first_na > 10) {
+    if (next_non_na - first_na > 10) { # more than 10 NAs in a row
       if (first_na == 1) {
         warning(paste0("There are ", next_non_na - first_na, " NA values at the start of the time series. Consider subsetting the data before modelling."))
       } else {
@@ -28,11 +28,15 @@ impute_linear <- function(dates, x) {
       }
     } 
 
-    if (next_non_na >= length(x)) {
+    if (next_non_na >= length(x)) { 
+      # If there are NAs at the end of the time series, fill them in with the most recent non-NA value
       x[first_na:length(x)] <- x[first_na - 1]
     } else if (first_na == 1) {
+      # If there are NAs at the start of the time series, fill them in with the first non-NA value
       x[1:next_non_na] <- x[next_non_na + 1]
     } else if (next_non_na - first_na == 1) {
+      # If there's just one NA, fill it in with the average of the two bordering non-NA values
+      # Note that "approx" needs at least two non-NA values to interpolate, so this is a special case.
       x[first_na] <- (x[first_na-1] + x[next_non_na]) / 2
     } else {
       # Fill NAs by linear interpolation, accounting for differing gaps in dates
@@ -44,7 +48,7 @@ impute_linear <- function(dates, x) {
       x[first_na:(next_non_na - 1)] <- new_vals
     }
 
-    # Find the next NA
+    # Find the next NA for the next iteration
     na_vals <- dates[is.na(x)]
   }
 

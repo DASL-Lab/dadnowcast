@@ -1,5 +1,7 @@
 #' Ensemble batch prediction intervals and prediction metrics
 #' 
+#' EnbPI takes `batches` of training data, fits a model to each batch, and then uses the residuals to calculate prediction intervals and prediction metrics. This targets the exact standard errors that we're looking for. If we're doing 8-step ahead nowcasting, we need an estimate of the standard error for the eighth step ahead, not just the general standard error for predictions. This is a model-agnostic approach to calculating prediction intervals.
+#' 
 #' @param X_train A data frame of training data.
 #' @param y_train A vector of training data.
 #' @param model The model to use for nowcasting.
@@ -10,11 +12,13 @@
 #' @param train_window The number of days to use for training. Defaults to 60% of the training data, which allows for a large training set for each batch while also allowing for a reasonable amount of variation in the test sets.
 #' @param level The prediction interval level.
 #'
-#' @returns A dadnow object with the ensemble predictions and intervals added.
+#' @returns A list containing the k-step ahead prediction standard errors and the evaluations of the models for the k-step ahead predictions.
 enbpi <- function(X_train, y_train, model, formula, params, k, batches = 40, train_window = NULL, level = 0.95) {
 
+  # If the train_window is not specified, set it to 60% of the training data
   if (is.null(train_window)) train_window <- floor(0.6 * length(y_train))
   
+  # Indices must be sampled such that the test data is still within the training data
   train_indices <- sample(1:(length(y_train) - k - train_window), batches, replace = TRUE)
 
   preds <- vector(mode = "list", length = batches)
@@ -31,7 +35,7 @@ enbpi <- function(X_train, y_train, model, formula, params, k, batches = 40, tra
     X_test_k <- X_train[(train_indices[i] + train_window + 1):(train_indices[i] + k + train_window), ]
     y_test_k <- y_train[(train_indices[i] + train_window + 1):(train_indices[i] + k + train_window)]
 
-    # Fit the model
+    # Fit the model and get residuals
     preds[[i]] <- dispatch_model(model)(X_train = X_train_k, Y_train = y_train_k, X_nowcast = X_test_k, params = params)$prediction$prediction
     resids[[i]] <- y_test_k - preds[[i]]
     
@@ -40,9 +44,14 @@ enbpi <- function(X_train, y_train, model, formula, params, k, batches = 40, tra
     mre[i] <- mean(((y_test_k - preds[[i]]) / (y_test_k + 0.1))^2)
   }
 
+  # Get the standard deviation of the residuals for each step ahead.
   resids_mat <- matrix(unlist(resids), nrow = k, byrow = FALSE)
   resids_se <- apply(resids_mat, 1, function(x) sd(x))
 
+  # Dealing with the model name.
+  # For AR, and "AR with order 1" is an AR(1) (similar for ARX)
+  # For mechanistic, it's important to note the method used.
+  # This is done here because the rows of the evals table are used to tell models apart elsewhere.
   if (model %in% c("ar", "arx")) {
     model <- paste0(model, params$order)
   } else if (model == "mechanistic") {

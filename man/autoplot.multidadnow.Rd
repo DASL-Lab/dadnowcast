@@ -4,7 +4,7 @@
 \alias{autoplot.multidadnow}
 \title{Plot the nowcasts}
 \usage{
-\method{autoplot}{multidadnow}(multidadnow, last_n = NULL)
+\method{autoplot}{multidadnow}(multidadnow, se = FALSE, last_n = Inf, alpha = 0.2)
 }
 \arguments{
 \item{multidadnow}{A multidadnow object.}

@@ -50,7 +50,7 @@ dadnow2 <- add_nowcast(dadnow2, model = "ar", params = list(order = 2)) |>
   add_nowcast("lm", formula = dad ~ cnisp + ptsos + npos) |>
   add_nowcast("arx", params = list(order = 1)) |>
   add_nowcast("gam", params = list(smooths = list("cnisp_lag0"=10))) |>
-  add_nowcast("rf", formula = dad ~ lag(cnisp, 2), params = list(ntree = 500, mtry = 3))
+  add_nowcast("rf", formula = dad ~ lag(cnisp, 2), params = list(ntree = 50, mtry = 3))
 
 dadnow2 <- add_nowcast(dadnow2, model = "xgboost", params = list(nrounds = 20))
 
@@ -62,7 +62,7 @@ autoplot(dadnow2, last_n = 25, se = TRUE) +
 
 ```
 
-The package includes a "mechanistic" model, which can be seen in `vignette("mechanistic_model")`. The model takes the parameters `sc` and `sp` and requires a method ("normal", "poisson", or "negbinom") to specify the distribution of the error term. Because it works slightly differently than the other models, it is added to a "multidadnow" object using the `add_mechanistic` function, which takes the same formula interface as `nowcast` but with different parameters. The mechanistic model can be added alongside the other models, and the same plotting and evaluation functions can be used.
+The package includes a "mechanistic" model, which can be seen in `vignette("Mechanistic_Model", package = "fatherStay")`. The model takes the parameters `sc` and `sp` and requires a method ("normal", "poisson", or "negbinom") to specify the distribution of the error term. Because it works slightly differently than the other models, it is added to a "multidadnow" object using the `add_mechanistic` function, which takes the same formula interface as `nowcast` but with different parameters. The mechanistic model can be added alongside the other models, and the same plotting and evaluation functions can be used.
 
 Note that the mechanistic assumption is sensitive to the values of sc and sp, and there will often be warnings about lack of convergence in the optimization process.
 

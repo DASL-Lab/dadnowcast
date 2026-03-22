@@ -20,7 +20,7 @@ nowcast(
 
 \item{data}{A data frame. Must contain the variables specified in the formula and in \code{date_col}. Trailing NA values in \code{y} will be nowcasted.}
 
-\item{model}{The model to use for nowcasting. Currently implemented: "lm", "ar". Can be a vector, in which case the model is trained for each model in the vector.}
+\item{model}{The model to use for nowcasting. See \code{vignette("Model_Details", package = "fatherStay")} and \code{vignette("Mechanistic_Model", package = "fatherStay")} for more information about currently implemented models, and \code{vignette("Write_fit_XX_functions", package = "fatherStay")} for how to write your own model for use in this package.}
 
 \item{params}{The parameters to use for the model. Must be a named list.}
 
@@ -37,4 +37,18 @@ An object of class "\code{dadnow}".
 }
 \description{
 Nowcast various models from a prepared data frame
+}
+\details{
+A short overview of the specific models used here is given below, more details can be found in the vignette \code{Model_Details}.
+\itemize{
+\item "lm", a standard linear model, which takes no additional parameters.
+\item "ar", an autoregressive model, it has the parameter \code{p} which is the degree of the AR model.
+\item "arx", an autoregressive model with exogenous variables, it is an AR model that adds the capacity to consider explanatory variables, it has the same parameters as an ar model.
+\item "arima", an ARIMA model combines an AR model with a moving average (MA) model, it has parameters \code{p}, which specifies the degree of the AR component, \code{d} which specifies the degree of differencing in the model, and \code{q} which is the degree of the moving average model.
+\item "gam", a generalized additive model, it has parameters \code{family} to specify the family used, \code{smooths} which is smoothing parameters for each variable, and \code{bs} which specifies basis smoothing functions.
+\item "kf", a Kalman filter model, which is a continuously updating model with a prediction and update portion, it takes additional parameters \code{degree} which specifies the degree of the trend, and \code{CovMatrix} which is a covariance matrix for the disturbance terms.
+\item "rf", a random forest model, a tree based model that grows many trees and combines the output to pick a prediction, it takes parameters \code{ntree} the number of trees to grow, \code{mtry} the number of variables used as candidates at each split, \code{weights} weights the sample data, \code{replace} should sampling be done with or without replacement, \code{maxnodes} limits the number of terminal nodes, \code{nodesize} sets the minimum size of the terminal nodes.
+\item "xgboost", a extreme gradient boosting model, which is a tree based model in which subsequent trees learn from previous trees, it takes parameters \code{nrounds} which is the number of boosting iteration to do, and \code{XGBparams} a list of more parameters used in the model the most important of which is \code{max_depth} both \code{nrounds} and \code{max_depth} are tuned if their values are not specified, it also takes \code{verbose} should output be silent (0) or not (1).
+\item "mechanistic", creates a mechanistic model, \code{sc}, \code{sp}, and \code{method} specifies the family.
+}
 }

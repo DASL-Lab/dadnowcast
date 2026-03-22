@@ -35,13 +35,16 @@ prep_data <- function(
     }
   }
 
+  # Determine the portions of data to be nowcast (based on trailing NAs in y)
   y <- data[, response]
   trailing_nas <- find_nas(y)
   stopifnot(trailing_nas > 0)
   num_non_na <- length(y) - trailing_nas
 
+  # parse_lag_formula expands lag(x, 1) to the appropriate model matrix
   model_matrix <- parse_lag_formula(formula, data)
 
+  # Split the data into training and nowcasting data
   X_train <- model_matrix[1:num_non_na, , drop = FALSE]
   X_nowcast <- model_matrix[(num_non_na + 1):nrow(data), , drop = FALSE]
   y_train <- y[1:num_non_na]
@@ -49,7 +52,7 @@ prep_data <- function(
   y_nowcast <- y[(num_non_na + 1):nrow(data)]
 
 
-  # Create dadnow object
+  # Prepare all relevant values for nowcasting
   dates <- data[, date_col]
   return_value <- list(
     formula = formula,
@@ -73,6 +76,8 @@ prep_data <- function(
 parse_dates <- function(data, date_col, quiet) {
   # Get the dates
   dates <- data[, date_col]
+
+  # Repeated dates indicate an issue with the pre-processing, likely meaning multiple provinces in the same nowcast.
   if (length(dates) != length(unique(dates))) {
     stop("There are repeated dates.")
   }
@@ -166,13 +171,14 @@ prep_newdata <- function(
   covariates <- all.vars(formula)[-1]
   stopifnot(all(covariates %in% colnames(data)))
 
-  # interpolate missing values
+  # interpolate missing values with basic linear interpolation
   if (interpolate) {
     for (covariate in covariates) {
       data[[covariate]] <- impute_linear(dates = data[, date_col], x = data[[covariate]])
     }
   }
 
+  # create the model matrix that will be returned
   model_matrix <- parse_lag_formula(formula, data)
 
   model_matrix
