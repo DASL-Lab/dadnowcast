@@ -14,7 +14,7 @@
 fit_RF <- function(Y_train, X_train = NULL, X_nowcast = NULL,
                    params = list(ntree = 500, mtry = NULL, weights = NULL, replace = TRUE, maxnodes = NULL, nodesize = 5)) {
   if (!requireNamespace("randomForest", quietly = TRUE)) {
-    warning("Package \"randomForest\" must be installed to use this function.")
+    stop("Package \"randomForest\" must be installed to use this function.")
     return(list(model = NULL, prediction = NULL))
   }
 

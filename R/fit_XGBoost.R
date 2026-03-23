@@ -12,7 +12,7 @@ fit_XGBoost <- function(Y_train, X_train = NULL, X_nowcast = NULL,
                                  XGBparams = list())) {
 
   if (!requireNamespace("xgboost", quietly = TRUE)) {
-    warning("Package \"xgboost\" must be installed to use this function.")
+    stop("Package \"xgboost\" must be installed to use this function.")
     return(list(model = NULL, prediction = NULL))
   }
 
