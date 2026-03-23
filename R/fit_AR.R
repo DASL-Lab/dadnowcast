@@ -2,10 +2,10 @@
 #'
 #' @param X_Train Training data for the explanatory variables in the model
 #' @param Y_Train Training data for the response variable
-#' @param X_Nowcast Data to make predictions bases on
+#' @param X_Nowcast Current data of X_train for which there is no Y_train data, used to make nowcasts
 #' @param params A named list containing additional parameters: `p` Integer indicating the degree of the AR model, and `n.ahead` integer indicating the number of predictions to be make
 #'
-#' @returns Arima object and predictions
+#' @returns Arima object, predictions, and fitted values of the model on the training data
 
 fit_AR <- function(Y_train, X_train = NULL, X_nowcast = NULL, params = list(p = 1, d = 0, q = 0, n.ahead = 1)) {
   # retrieve the number of future predictions to make, if not specified, then will be based on the number of rows in the nowcast data
