@@ -22,6 +22,8 @@ library(fatherStay)
 
 In this package the assumed structure of the data is that there will be a response variable DAD ($y_t$) occurring over time $t$, and several explanatory variables RVDSS ($x_t$), PTSOS ($z_{1,t}$), and CNISP ($z_{2,t}$). $z_1$, and $z_2$ are assumed to be from the same data generating process and thus at least somewhat correlated, while $x$ is assumed to come from a different data generating process.
 
+All of the models in this package take four arguments: Three are for data; `Y_train`, `X_train`, and `X_nowcast`, which represent the observed response variable, the correlating observed explanatory variables, and the observations of the explanatory variables that have no corresponding response variable observations which are used as a basis for the nowcasts created. The last is `params` which is for additional parameters for the the specific model.
+
 # Linear Model
 
 The first and simplest models that we will be looking at in this project are linear models where the value of DAD we are nowcasting is dependent on the current values of the explanatory variables:
@@ -34,13 +36,13 @@ $$
 y_t = \alpha_0 x_t + \alpha_1 x_{t-1} + \beta_1 z_{t,1} + \beta_2 z_{t,2} + \epsilon_t
 $$  
 
-The usage of these models in the package is very simple. The function `fit_LM` fits a linear model with given parameters, there are options for `Y_train`, `X_train`, and `X_nowcast`, which represent the observed response variable, the correlating observed explanatory variables, and the observations of the explanatory variables that have no corresponding response variable observations. There are no options for any other parameters in this model.
-
-This model is the simplest and easiest to run and interpret, however it has the drawbacks of not directly accounting for time or previous values of the response variable, and not accounting for non-linear patterns.
+The function `fit_LM` fits a linear model with given parameters, there are no options for any other parameters in this model. This model is the simplest and easiest to run and interpret, however it has the drawbacks of not directly accounting for time or previous values of the response variable, and not accounting for non-linear patterns.
 
 # AR
 
-The function `fit_AR` fits a basic Auto-Regressive (AR) model on the response variable `Y_train`, and takes a parameter `n.ahead` to indicate how many predictions the function should make, as well as a parameter `p` which indicates the degree of the AR model. This function also includes many parameter options to fit many more advanced variations of AR models, but these are for the convenience of future functions. An AR(p) model follows the form:
+The function `fit_AR` fits a basic Auto-Regressive (AR) model on the response variable `Y_train`, and takes a parameter `n.ahead` to indicate how many predictions the function should make, as well as a parameter `p` which indicates the degree of the AR model. A higher value of `p` means that the model will directly consider more previous terms in the calculation, a high `p` can easily lead to overfitting depending on the data, since previous terms may not be strongly correlated with the current term.
+
+This function also includes many parameter options to fit many more advanced variations of AR models, but these are for the convenience of future functions. An AR(p) model follows the form:
 
 $$
 y_t = \sum_{i=0}^p \beta_{t-i} y_{t-i}
@@ -56,7 +58,7 @@ $$
 y_t = \sum_{i=0}^n \alpha_{t-i} x_{t-i} + \sum_{i=0}^p \gamma_{t-i} z_{t-i,1} + \sum_{i=0}^p \gamma_{t-i} z_{t-i,2} + \sum_{j=1}^m \beta_{t-i} y_{t-i} + \epsilon_t
 $$
 
-The function `fit_ARX` takes the arguments `Y_train`, `X_train`, `X_nowcast`, and a `params` argument `p` which indicates the degree of the AR model. While it is still possible to use `n.ahead` in `fit_ARX`, it is unnecessary due to the function automatically using the length of `X_nowcast` as the number of predictions to make.
+The function `fit_ARX` takes the additional `params` argument `p` which indicates the degree of the AR model. While it is still possible to use `n.ahead` in `fit_ARX`, it is unnecessary due to the function automatically using the length of `X_nowcast` as the number of predictions to make.
 
 This model builds on the simple AR model by now taking into account the exogenous variables.
 
@@ -68,7 +70,7 @@ $$
 (1 - \sum^p_{i=1}\alpha_iL^{i}) X_t = (1 + \sum^q_{i=1}\theta_iL^{i})
 $$
 
-The function `fit_ARIMA` takes arguments `Y_train`, `X_train`, `X_nowcast`, and `params` arguments: `p` which indicates the degree of the AR portion, `d` which indicates the degree of differencing, and `q` which indicates the MA degree.
+The function `fit_ARIMA` takes additional `params` arguments: `p` which indicates the degree of the AR portion, `d` which indicates the degree of differencing, and `q` which indicates the MA degree. A high value for `d` means that the model requires more differencing to make it stationary, in general lower values of `d` are preferred since it is easy to ovefit a model with a large value. A large value of `q` means that the moving average takes more previous terms into account and makes the moving average part of the model smoother while loosing some of the subtly in the movement of the data.
 
 This model builds on an ARX model by incorporating a moving average and differencing in it, these allow for the model to capture more complex trends in the data, but increase the risk of overfitting or the model identifying trends that are not actually present in the data.
 
@@ -82,7 +84,10 @@ $$
 
 Where $b_i(), \ b_j(), \ b_k()$ are all basis splines.
 
-The function `fit_GAM` fits a GAM function on the given data in the form of `Y_train`, `X_train`, and `X_nowcast`. There are multiple `params` options to specify parameters for the type of GAM function that is desired; `family` specifies the distribution and link function for the model, `smooths` is a named list indicating which smoothing parameters to use on each variable, `bs` giving the basis smoothing function. Each of these parameters are optional and have appropriate built in defaults, but the parameters allow for a highly customizable function.
+The function `fit_GAM` fits a GAM function on the given data. There are multiple `params` options to specify parameters for the type of GAM function that is desired; 
+- `family` specifies the distribution and link function for the model, it defaults to a gaussian distribution but there are many possible values to use, they are specified in `family`, and `family.mgcv`.
+- `smooths` is a named list indicating which smoothing parameters to use on each variable.
+- `bs` giving the basis smoothing function. Each of these parameters are optional and have appropriate built in defaults, but the parameters allow for a highly customizable function.
 
 A GAM function is much more flexible than a linear model or an ARIMA model, and can capture complex patterns in the data, however it does not necessarily take the time bound nature of this data into account without modifications (ie using the lag terms). A GAM can also be prone to overfitting to the training data.
 
@@ -91,7 +96,7 @@ A GAM function is much more flexible than a linear model or an ARIMA model, and 
 The function `fit_RF` fits a random forest model on the given data using the package `randomForest`. This function uses the same data variables, `Y_train`, `X_train`, and `X_nowcast`. There are parameters, 
 - `ntree` which specifies the number of trees to grow the default is 500, a higher value leads to a lower bias as each individual tree has a lower impact on the final outcome, but at the expense of being more computationally intense.
 - `mtry` is the number of variables used as candidates at each split the default value is the square root of the number of explanatory variables used in the model, a larger value of mtry makes the trees within the forest more correlated with each and when the value of mtry is equal to the number of parameters the model is just bagging.
-- `weights` for weighting the sample data, this is used if the user wishes to emphasize parts of the data for example if there is a class imbalance. (REPLACE EXAMPLE, WE wont have a class imbalance here I think?, could also use when there is bias in the data)
+- `weights` for weighting the sample data, this is used if the user wishes to emphasize parts of the data, but in general is not necessary.
 - `replace` specifies if sampling should be done with or without replacement the default is TRUE. 
 - The final two options are both for limiting the size of the trees grown which is not necessary to do manually but is a very nice option to have, especially if computing time is a concern. 
    - `maxnodes` which limits the number of terminal nodes that a tree can have which defaults to letting the tree grow without restriction.      - `nodesize` which sets the minimum size of the terminal nodes and defaults to 5.
@@ -103,7 +108,7 @@ A random forest is a very flexible model which is very good at finding complex r
 The function `fit_XGBoost` useds the package `xgboost` to create an extreme gradient boosted model. This model builds a series of trees sequentially and each subsequent tree learns from the trees before it. This model has several parameter options:
  - `nrounds` this specifies the maximum number of boosting iterations. The function `fit_xgboost` will automatically tune this value to the data that it is given if there is no default value given.
  - `verbose` specifies if information about the model will be printed out when creating it, 0 makes it silent, the default is 1.
- - XGBparams is a list of more parameters used in the model, the most important of which is `max_depth` which sets the depth of the trees used in the model.
+ - `XGBparams` is a list of more parameters used in the model, a full list of the options is available in `xgboost::xgb.params`, but the most important of them is `max_depth` which sets the depth of the trees used in the model. A higher `max_depth` means that the tree will be deeper allowing for more end nodes, and a higher potential for overfitting. This function will automatically tune the value of `max_depth` if one is not specified.
 
 # Kalman Filter
 
