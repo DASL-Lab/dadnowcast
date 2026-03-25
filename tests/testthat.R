@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(fatherStay)
+library(dadnowcast)
 
-test_check("fatherStay")
+test_check("dadnowcast")

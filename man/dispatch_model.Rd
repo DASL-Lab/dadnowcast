@@ -7,7 +7,7 @@
 dispatch_model(model)
 }
 \arguments{
-\item{model}{The model to use for nowcasting. If not specified, the function attempts to find a function called \code{model}. See \code{vignette("Write_fit_XX_functions", package = "fatherStay")} for how to write your own model for use in this package.}
+\item{model}{The model to use for nowcasting. If not specified, the function attempts to find a function called \code{model}. See \code{vignette("Write_fit_XX_functions", package = "dadnowcast")} for how to write your own model for use in this package.}
 }
 \description{
 Choose a model to use for nowcasting

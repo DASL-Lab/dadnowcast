@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 #devtools::load_all()
-library(fatherStay)
+library(dadnowcast)
 library(ggplot2)
 ```
 
@@ -64,9 +64,9 @@ There's also an `autoplot()` method for "multidadnow" objects, which plots the n
 The function uses the same data as the output of `get_data()`, so the data can be extracted from the "multidadnow" object and used in the plot.
 
 ```{r autoplot}
-autoplot(dadnow2, last_n = 25, se = TRUE) +
+autoplot(dadnow2, last_n = 5, se = TRUE) +
   theme_bw() +
-  facet_wrap(formula ~ model)
+  facet_wrap(formula ~ model + params)
 
 ```
 
@@ -81,7 +81,7 @@ ggplot(evals) +
   theme_bw()
 ```
 
-The package includes a "mechanistic" model, which can be seen in `vignette("Mechanistic_Model", package = "fatherStay")`. The model takes the parameters `sc` and `sp` and requires a method ("normal", "poisson", or "negbinom") to specify the distribution of the error term. Because it works slightly differently than the other models, it is added to a "multidadnow" object using the `add_mechanistic` function, which takes the same formula interface as `nowcast` but with different parameters. The mechanistic model can be added alongside the other models, and the same plotting and evaluation functions can be used.
+The package includes a "mechanistic" model, which can be seen in `vignette("Mechanistic_Model", package = "dadnowcast")`. The model takes the parameters `sc` and `sp` and requires a method ("normal", "poisson", or "negbinom") to specify the distribution of the error term. Because it works slightly differently than the other models, it is added to a "multidadnow" object using the `add_mechanistic` function, which takes the same formula interface as `nowcast` but with different parameters. The mechanistic model can be added alongside the other models, and the same plotting and evaluation functions can be used.
 
 Note that the mechanistic assumption is sensitive to the values of sc and sp, and there will often be warnings about lack of convergence in the optimization process.
 
@@ -144,7 +144,7 @@ ggplot(resids, aes(x = fitted_value, y = residual, colour = model_id)) +
 
 ## Evaluation Metrics
 
-The evaluation metrics come from the `fatherStay:::enbpi()` function, which uses Ensemble batch prediction intervals to calculate prediction intervals and prediction metrics. This works by creating many different "batches" (which are contiguous sets of data, i.e., using all data in a time interval), each with the same number of training observations; fitting a model to the batch; and then predicting $k$ steps ahead ($k$ is chosen based on the amount of trailing NAs in DAD data, i.e., the number of nowcasts to be made). For example, if there are 10 points in the data to be nowcast and you choose `batches=40` with `training_window=NULL`, then the function will create 40 batches, each with 60% of the training data, fit a model, then calculate the 10-step ahead predictions from each model. The batches all have the same size but a random starting index, meaning that we get data without time jumps.
+The evaluation metrics come from the `dadnowcast:::enbpi()` function, which uses Ensemble batch prediction intervals to calculate prediction intervals and prediction metrics. This works by creating many different "batches" (which are contiguous sets of data, i.e., using all data in a time interval), each with the same number of training observations; fitting a model to the batch; and then predicting $k$ steps ahead ($k$ is chosen based on the amount of trailing NAs in DAD data, i.e., the number of nowcasts to be made). For example, if there are 10 points in the data to be nowcast and you choose `batches=40` with `training_window=NULL`, then the function will create 40 batches, each with 60% of the training data, fit a model, then calculate the 10-step ahead predictions from each model. The batches all have the same size but a random starting index, meaning that we get data without time jumps.
 
 From each batch, we have a set of predictions compared to actual values. The standard deviation of the 1-step ahead prediction can be calculated from the batches, then the standard deviation of the 2-step ahead, etc. This gives us an empirical measure of the prediction intervals for our particular nowcasting scenario.
 

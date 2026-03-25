@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(fatherStay)
+library(dadnowcast)
 ```
 
 In this package the assumed structure of the data is that there will be a response variable DAD ($y_t$) occurring over time $t$, and several explanatory variables RVDSS ($x_t$), PTSOS ($z_{1,t}$), and CNISP ($z_{2,t}$). $z_1$, and $z_2$ are assumed to be from the same data generating process and thus at least somewhat correlated, while $x$ is assumed to come from a different data generating process.
