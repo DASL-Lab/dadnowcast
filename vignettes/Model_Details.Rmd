@@ -70,7 +70,11 @@ $$
 (1 - \sum^p_{i=1}\alpha_iL^{i}) X_t = (1 + \sum^q_{i=1}\theta_iL^{i})
 $$
 
-The function `fit_ARIMA` takes additional `params` arguments: `p` which indicates the degree of the AR portion, `d` which indicates the degree of differencing, and `q` which indicates the MA degree. A high value for `d` means that the model requires more differencing to make it stationary, in general lower values of `d` are preferred since it is easy to ovefit a model with a large value. A large value of `q` means that the moving average takes more previous terms into account and makes the moving average part of the model smoother while loosing some of the subtly in the movement of the data.
+The function `fit_ARIMA` takes additional `params` arguments: 
+
+- `p` which indicates the degree of the AR portion. A higher value of `p` means that the model will directly consider more previous terms in the calculation which can lead to overfitting depending on the data.
+- `d` which indicates the degree of differencing. A high value for `d` means that the model requires more differencing to make it stationary, in general lower values of `d` are preferred since it is easy to ovefit a model with a large value.
+- `q` which indicates the MA degree. A large value of `q` means that the moving average takes more previous terms into account and makes the moving average part of the model smoother while loosing some of the subtly in the movement of the data.
 
 This model builds on an ARX model by incorporating a moving average and differencing in it, these allow for the model to capture more complex trends in the data, but increase the risk of overfitting or the model identifying trends that are not actually present in the data.
 
@@ -85,27 +89,32 @@ $$
 Where $b_i(), \ b_j(), \ b_k()$ are all basis splines.
 
 The function `fit_GAM` fits a GAM function on the given data. There are multiple `params` options to specify parameters for the type of GAM function that is desired; 
-- `family` specifies the distribution and link function for the model, it defaults to a gaussian distribution but there are many possible values to use, they are specified in `family`, and `family.mgcv`.
-- `smooths` is a named list indicating which smoothing parameters to use on each variable.
-- `bs` giving the basis smoothing function. Each of these parameters are optional and have appropriate built in defaults, but the parameters allow for a highly customizable function.
+
+* `family` specifies the distribution and link function for the model, it defaults to a gaussian distribution but there are many possible values to use, they are specified in `family`, and `family.mgcv`.
+* `smooths` is a named list indicating which smoothing parameters to use on each variable.
+* `bs` giving the basis smoothing function. Each of these parameters are optional and have appropriate built in defaults, but the parameters allow for a highly customizable function.
 
 A GAM function is much more flexible than a linear model or an ARIMA model, and can capture complex patterns in the data, however it does not necessarily take the time bound nature of this data into account without modifications (ie using the lag terms). A GAM can also be prone to overfitting to the training data.
 
 # Random Forest
 
-The function `fit_RF` fits a random forest model on the given data using the package `randomForest`. This function uses the same data variables, `Y_train`, `X_train`, and `X_nowcast`. There are parameters, 
+The function `fit_RF` fits a random forest model on the given data using the package `randomForest`. This function uses the same data variables, `Y_train`, `X_train`, and `X_nowcast`. There are parameters:
+
 - `ntree` which specifies the number of trees to grow the default is 500, a higher value leads to a lower bias as each individual tree has a lower impact on the final outcome, but at the expense of being more computationally intense.
 - `mtry` is the number of variables used as candidates at each split the default value is the square root of the number of explanatory variables used in the model, a larger value of mtry makes the trees within the forest more correlated with each and when the value of mtry is equal to the number of parameters the model is just bagging.
 - `weights` for weighting the sample data, this is used if the user wishes to emphasize parts of the data, but in general is not necessary.
 - `replace` specifies if sampling should be done with or without replacement the default is TRUE. 
 - The final two options are both for limiting the size of the trees grown which is not necessary to do manually but is a very nice option to have, especially if computing time is a concern. 
-   - `maxnodes` which limits the number of terminal nodes that a tree can have which defaults to letting the tree grow without restriction.      - `nodesize` which sets the minimum size of the terminal nodes and defaults to 5.
+   - `maxnodes` which limits the number of terminal nodes that a tree can have which defaults to letting the tree grow without restriction. 
+   
+   - `nodesize` which sets the minimum size of the terminal nodes and defaults to 5.
    
 A random forest is a very flexible model which is very good at finding complex relationships between many variables.
 
 # XGBoost
 
 The function `fit_XGBoost` useds the package `xgboost` to create an extreme gradient boosted model. This model builds a series of trees sequentially and each subsequent tree learns from the trees before it. This model has several parameter options:
+
  - `nrounds` this specifies the maximum number of boosting iterations. The function `fit_xgboost` will automatically tune this value to the data that it is given if there is no default value given.
  - `verbose` specifies if information about the model will be printed out when creating it, 0 makes it silent, the default is 1.
  - `XGBparams` is a list of more parameters used in the model, a full list of the options is available in `xgboost::xgb.params`, but the most important of them is `max_depth` which sets the depth of the trees used in the model. A higher `max_depth` means that the tree will be deeper allowing for more end nodes, and a higher potential for overfitting. This function will automatically tune the value of `max_depth` if one is not specified.
