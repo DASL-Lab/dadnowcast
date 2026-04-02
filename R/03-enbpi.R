@@ -27,12 +27,14 @@ enbpi <- function(X_train, y_train, model, formula, params, k, batches = 40, tra
   mre <- vector(mode = "numeric", length = batches)
   for (i in 1:batches) {
     # Get the training data
-    X_train_k <- X_train[train_indices[i]:(train_indices[i] + train_window), ]
-    y_train_k <- y_train[train_indices[i]:(train_indices[i] + train_window)]
+    to_train <- train_indices[i]:(train_indices[i] + train_window)
+    X_train_k <- X_train[to_train, , drop = FALSE]
+    y_train_k <- y_train[to_train]
 
     # Get the test data
-    X_test_k <- X_train[(train_indices[i] + train_window + 1):(train_indices[i] + k + train_window), ]
-    y_test_k <- y_train[(train_indices[i] + train_window + 1):(train_indices[i] + k + train_window)]
+    to_test <- (train_indices[i] + train_window + 1):(train_indices[i] + k + train_window)
+    X_test_k <- X_train[to_test, , drop = FALSE]
+    y_test_k <- y_train[to_test]
 
     # Fit the model and get residuals
     preds[[i]] <- dispatch_model(model)(X_train = X_train_k, Y_train = y_train_k, X_nowcast = X_test_k, params = params)$prediction$prediction
