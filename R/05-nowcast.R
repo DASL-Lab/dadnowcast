@@ -156,7 +156,7 @@ make_model_id <- function(evals) {
 
   all_formulas <- paste0("f", match(evals$formula, unique(evals$formula)))
   all_models <- evals$model
-  model_ids <- paste0(all_formulas, "_",  all_models)
+  model_ids <- paste0(all_models, "_", all_formulas)
 
   param_set <- ave(
     seq_len(nrow(evals)),
