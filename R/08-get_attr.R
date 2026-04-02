@@ -80,7 +80,7 @@ get_data <- function(dadnow, include_training = TRUE) {
     df <- x$nowcasted_data
     df$model_id <- x$model_id
     df
-})
+  })
   nowcasted_data <- do.call(rbind, nowcasted_data)
   if (include_training) {
     train <- dadnow$data[1:length(dadnow$models[[1]]$prepped_data$dates_train), ]
@@ -88,7 +88,7 @@ get_data <- function(dadnow, include_training = TRUE) {
     nowcasted_data <- rbind(train, nowcasted_data)
   }
   nowcasted_data
-  }
+}
 
 #' Get the evaluation metrics from a dadnow object
 #'

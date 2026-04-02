@@ -155,7 +155,7 @@ nowcast <- function(
 make_model_id <- function(evals) {
 
   all_formulas <- paste0("f", match(evals$formula, unique(evals$formula)))
-  all_models <- evals$model#paste0("m", match(evals$model, unique(evals$model)))
+  all_models <- evals$model
   model_ids <- paste0(all_formulas, "_",  all_models)
 
   param_set <- ave(
