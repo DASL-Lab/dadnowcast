@@ -8,7 +8,7 @@
 #' @param level The prediction interval level.
 #' @param params The parameters to use for the model. Must be a named list.
 #' @param date_col Name of the column containing date information. If NULL, the date information attempted to be inferred. If there's a single datetime column then it is used. If the data are a ts or mts or zoo object, the dates are esxtracted.
-#' @param se Should the standard errors and evaluation metrics be calculated by ensemble-based batch prediction intervals (EnbPI)? If FALSE, the function will return NAs for the standard errors and evaluation metrics.
+#' @param se Should the standard errors and evaluation metrics be calculated by ensemble-based batch prediction intervals (EnbPI)? If FALSE, the function will return NAs for the standard errors and evaluation metrics. Can also be set to "theoretical" to use the theoretical prediction intervals for the model, if they are returned by the fit_*() function.
 #'
 #' @details
 #' A short overview of the specific models used here is given below, more details can be found in the vignette `Model_Details` and the individual help files (`?fit_*`, where `*` is the name of the model).
@@ -75,6 +75,7 @@ nowcast <- function(
     se = se
   )
 
+
   # Fit to all training, create nowcast
   # Returns the raw model object, a data frame called prediction with a column labelled prediction, and a data frame called fitted_values with the fitted values.
   nowcast <- dispatch_model(model)(
@@ -83,6 +84,7 @@ nowcast <- function(
     X_nowcast = X_now,
     params = params
   )
+  
 
   # Take the training data and add the nowcasted data to it.
   # Format it so that it's just the columns used in the formula.
@@ -104,6 +106,17 @@ nowcast <- function(
     qnorm((1 - level)/2) * enbpi$se
   nowcasted_data$pi_upper <- nowcast$prediction$prediction +
     qnorm(1 - (1 - level)/2) * enbpi$se
+  
+  # Add theoretical prediction intervals if requested and available.
+  if (se == "theoretical") {
+    if ("lower" %in% names(nowcast$prediction)) {
+      nowcasted_data$pi_lower <- nowcast$prediction$lower
+      nowcasted_data$pi_upper <- nowcast$prediction$upper
+    } else {
+      warning("Theoretical prediction intervals are not available for this model. Ensure that the fit_*() function returns non-NA values for the lower and upper bounds.")
+    }
+  }
+
   nowcasted_data$formula <- deparse(formula)
 
   aug_data$model <- "Training"

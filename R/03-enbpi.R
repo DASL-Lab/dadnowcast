@@ -15,7 +15,7 @@
 enbpi <- function(X_train, y_train, model, formula, params, k, batches = 40, train_window = NULL, se = TRUE) {
 
   # Return NAs if enbpi is not used.
-  if (!se) {
+  if (se == FALSE) {
     
     evals = data.frame(
       "formula" = deparse(formula),
